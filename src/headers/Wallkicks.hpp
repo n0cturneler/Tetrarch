@@ -28,6 +28,16 @@ namespace wallKick
 
 	// Original SRS wallkick data
 	// SRStoGrid() inverts the y axis basically y * -1 
+	// 
+	// Its in this order
+	// 0->R
+	// R->0
+	// R->2
+	// 2->R
+	// L->2
+	// L->0
+	// 0->L
+
 	inline constexpr Data JLSTZ
 	{
 		Test{
@@ -70,7 +80,7 @@ namespace wallKick
 			SRStoGrid({-1, 0}),
 			SRStoGrid({-1, -1}),
 			SRStoGrid({0, 2}),
-			SRStoGrid({1, 2})
+			SRStoGrid({-1, 2})
 	},
 		Test{
 			SRStoGrid({0, 0}),

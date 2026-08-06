@@ -42,14 +42,14 @@ namespace piece
 
 		std::chrono::time_point<std::chrono::steady_clock> lockStart() const { return m_lockStart; } 
 
-		bool isCollidingBottom(const Board& staticPieces) const;
+		bool isPositionValid(const Board& staticPieces, grid::Grid2D testOffset = {}) const;
 
 	private:
-		bool isCollidingStaticPiece(const Board& staticPieces, grid::Grid2D testPos) const;
-		bool isCollidingSides(const Board& staticPieces, int moveOffset) const;
+		bool isColliding(const Board& staticPieces, grid::Grid2D testPos) const;
+		bool isOutOfBounds(grid::Grid2D testPos) const;
 
-		grid::Grid2D testWallkick(); // Returns 0 if wallkick failed
-		wallKick::Notation getKickNotation(int newState);
+		grid::Grid2D testWallkick(wallKick::Notation notation, const Board& staticPieces) const; // Returns 0 if wallkick failed
+		wallKick::Notation getWallkickNotation(int offset) const;
 
 		grid::Grid2D getHardDropPos(const Board& staticPieces) const;
 
@@ -63,7 +63,6 @@ namespace piece
 		std::chrono::time_point<std::chrono::steady_clock> m_lastGravityTick{std::chrono::steady_clock::now()};
 
 		std::chrono::time_point<std::chrono::steady_clock> m_lockStart{std::chrono::steady_clock::now()};
-		int m_lockCount{0};
 
 		pieceType::PieceType m_type{};
 		int m_rotationState{0};

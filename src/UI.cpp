@@ -116,7 +116,7 @@ void UI::lockDelay(const piece::Piece& activePiece, const piece::Board& staticPi
 
     std::string text{};
 
-    if (activePiece.isCollidingBottom(staticPieces))
+    if (!activePiece.isPositionValid(staticPieces, {0, 1}))
     {
         text = std::format("[{}ms]", duration_lock);
     } 

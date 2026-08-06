@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <raylib.h>
 
 namespace grid
@@ -8,6 +9,15 @@ namespace grid
 	{
 		int x{};
 		int y{};
+
+		friend bool operator==(const Grid2D& lhs, const Grid2D& rhs)
+		{
+			return (lhs.x == rhs.x) && (lhs.y == rhs.y);
+		}
+		friend bool operator!=(const Grid2D& lhs, const Grid2D& rhs)
+		{
+			return !(lhs == rhs);
+		}
 	};
 
 	Vector3 gridToWorld(Grid2D gridPos);

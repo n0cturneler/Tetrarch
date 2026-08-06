@@ -15,8 +15,8 @@
 #include "Random.hpp"
 
 #include <raylib.h>
-#include <imgui.h>
 
+#include <imgui.h>
 #include <rlImGui.h>
 
 #include <iostream> 
@@ -46,12 +46,7 @@ int main()
 
 	piece::Piece activePiece{options::game::gridSpawn, currentBag.getNextpieceType(nextBag)};
 
-	using Board = std::array<
-		std::array<cell::Cell, options::game::columns>,
-		options::game::rows
-	>;
-
-	Board staticPieces{};
+	piece::Board staticPieces{};
 
 	while (!WindowShouldClose())
 	{

@@ -21,6 +21,8 @@ namespace options
 		inline constexpr int bufferRows{20};
 
 		inline constexpr int bagDisplayCount{5};
+		
+		inline constexpr int wallkickAmount{5};
 
 		// All of these 5 are in milliseconds(ms)
 		inline constexpr int gravityMS{1000}; 
