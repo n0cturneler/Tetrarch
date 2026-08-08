@@ -11,6 +11,7 @@
 #include "UI.hpp"
 #include "Cell.hpp"
 #include "Input.hpp"
+#include "Board.hpp"
 
 #include "Random.hpp"
 
@@ -44,38 +45,37 @@ int main()
 	bag::Bag currentBag{Random::mt};
 	bag::Bag nextBag{Random::mt};
 
-	piece::Piece activePiece{options::game::gridSpawn, currentBag.getNextpieceType(nextBag)};
-
-	piece::Board staticPieces{};
+	board::Board curBoard{options::game::rows, options::game::bufferRows, options::game::columns};
+	piece::Piece activePiece{curBoard.spawnPos(), currentBag.getNextpieceType(nextBag)};
 
 	while (!WindowShouldClose())
 	{
 		[[maybe_unused]] float dt{GetFrameTime()};
 
-		//float mouseWheelMovement = GetMouseWheelMove();
-		//camera.position = cam::update(camera.position, mouseWheelMovement);
+		float mouseWheelMovement = GetMouseWheelMove();
+		camera.position = cam::update(camera.position, mouseWheelMovement);
 
 		input::PieceActions currentAction{input::getPieceAction()};
-		activePiece.update(currentAction, staticPieces, currentBag, nextBag);
+		activePiece.update(currentAction, curBoard, currentBag, nextBag);
 
 		BeginDrawing();
 		ClearBackground(options::colors::background);
 
 		BeginMode3D(camera);
+			
+			background::draw();
 
-			Background::draw();
-
-			piece::drawStatic(staticPieces);
-			activePiece.drawGhostPiece(staticPieces);
-			activePiece.draw();
-
+			activePiece.drawGhostPiece(curBoard);
+			curBoard.draw();
+			activePiece.draw(curBoard);
+			
 		EndMode3D();
 
 		rlImGuiBegin();
 			
 			UI::FPS();
 			UI::drawBag(currentBag, nextBag);
-			UI::lockDelay(activePiece, staticPieces);
+			UI::lockDelay(activePiece, curBoard);
 			
 		rlImGuiEnd();
 		EndDrawing();

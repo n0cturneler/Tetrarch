@@ -76,7 +76,7 @@ void UI::FPS()
     ImGui::End();
 }
 
-void UI::lockDelay(const piece::Piece& activePiece, const piece::Board& staticPieces)
+void UI::lockDelay(const piece::Piece& activePiece, const board::Board& curBoard)
 {   
     using ms = std::chrono::milliseconds;
     auto now{std::chrono::steady_clock::now()};
@@ -115,8 +115,9 @@ void UI::lockDelay(const piece::Piece& activePiece, const piece::Board& staticPi
     float tProgress{duration_lock / static_cast<float>(game::lockDelayMS)};
 
     std::string text{};
+    std::cout << activePiece.gridPos().x << ", " << activePiece.gridPos().y + 1 << '\n';
 
-    if (!activePiece.isPositionValid(staticPieces, {0, 1}))
+    if (!activePiece.isPositionValid(curBoard, {0, 1}))
     {
         text = std::format("[{}ms]", duration_lock);
     } 

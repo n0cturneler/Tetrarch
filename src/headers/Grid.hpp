@@ -10,18 +10,29 @@ namespace grid
 		int x{};
 		int y{};
 
+		friend Grid2D operator+(const Grid2D& lhs, const Grid2D& rhs)
+		{
+			return {lhs.x + rhs.x, lhs.y + rhs.y};
+		}
+
+		friend Grid2D operator-(const Grid2D& lhs, const Grid2D& rhs)
+		{
+			return {lhs.x - rhs.x, lhs.y - rhs.y};
+		}
+
+		friend Grid2D operator-(const Grid2D& lhs)
+		{
+			return {-lhs.x, - lhs.y};
+		}
+
 		friend bool operator==(const Grid2D& lhs, const Grid2D& rhs)
 		{
 			return (lhs.x == rhs.x) && (lhs.y == rhs.y);
 		}
+
 		friend bool operator!=(const Grid2D& lhs, const Grid2D& rhs)
 		{
 			return !(lhs == rhs);
 		}
 	};
-
-	Vector3 gridToWorld(Grid2D gridPos);
-
-	Grid2D add(Grid2D grid1, Grid2D grid2);
-	Grid2D inverse(Grid2D grid);
 }

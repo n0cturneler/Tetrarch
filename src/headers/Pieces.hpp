@@ -7,6 +7,7 @@
 #include "Cell.hpp"
 #include "Input.hpp"
 #include "Wallkicks.hpp"
+#include "Board.hpp"
 
 #include <raylib.h>
 
@@ -14,14 +15,15 @@
 #include <vector>
 #include <array>
 #include <chrono>
+#include <optional>
+
+namespace board
+{
+	class Board;
+}
 
 namespace piece
-{	
-	using Board = std::array<
-		std::array<cell::Cell, options::game::columns>,
-		options::game::rows
-	>;
-
+{		
 	class Piece
 	{
 	public:
@@ -33,27 +35,25 @@ namespace piece
 
 		Piece(grid::Grid2D spawnPos, pieceType::PieceType type, int rotationState = 0);
 
-		void update(const input::PieceActions& actions, Board& staticPieces, bag::Bag& currentBag, bag::Bag& nextBag);
-		void draw() const;
-		void drawGhostPiece(const Board& staticPieces) const;
 		pieceType::PieceType type() const { return m_type; }
+		int rotationState() const { return m_rotationState; }
+		grid::Grid2D gridPos() const { return m_gridPos; }
 
-		void reset(bag::Bag& currentBag, bag::Bag& nextBag);
+		void update(const input::PieceActions& actions, board::Board& curBoard, bag::Bag& currentBag, bag::Bag& nextBag);
+		void draw(const board::Board& curBoard) const;
+		void drawGhostPiece(const board::Board& curBoard) const;
+		
+		void reset(bag::Bag& currentBag, bag::Bag& nextBag, const board::Board& curBoard);
 
 		std::chrono::time_point<std::chrono::steady_clock> lockStart() const { return m_lockStart; } 
 
-		bool isPositionValid(const Board& staticPieces, grid::Grid2D testOffset = {}) const;
+		bool isPositionValid(const board::Board& curBoard, grid::Grid2D testOffset = {}) const;
 
 	private:
-		bool isColliding(const Board& staticPieces, grid::Grid2D testPos) const;
-		bool isOutOfBounds(grid::Grid2D testPos) const;
-
-		grid::Grid2D testWallkick(wallKick::Notation notation, const Board& staticPieces) const; // Returns 0 if wallkick failed
+		std::optional<grid::Grid2D> testWallkick(wallKick::Notation notation, const board::Board& curBoard) const; 
 		wallKick::Notation getWallkickNotation(int offset) const;
 
-		grid::Grid2D getHardDropPos(const Board& staticPieces) const;
-
-		void setStaticData(Board& staticPieces) const;
+		grid::Grid2D getHardDropPos(const board::Board& curBoard) const;
 
 		HoldState m_leftState{};
 		HoldState m_rightState{};
@@ -61,14 +61,10 @@ namespace piece
 		grid::Grid2D m_gridPos{0, 0};
 
 		std::chrono::time_point<std::chrono::steady_clock> m_lastGravityTick{std::chrono::steady_clock::now()};
-
 		std::chrono::time_point<std::chrono::steady_clock> m_lockStart{std::chrono::steady_clock::now()};
 
 		pieceType::PieceType m_type{};
 		int m_rotationState{0};
 
 	};
-
-	void drawStatic(const Board& staticPieces);
-
 }

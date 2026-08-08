@@ -2,7 +2,7 @@
 
 #include <raylib.h>
 
-namespace Background
+namespace background
 {
 	void draw();
 }

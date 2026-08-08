@@ -4,12 +4,13 @@
 #include <raymath.h>
 
 #include "Options.hpp"
+#include "Board.hpp"
 
 #include <print>
 
 using namespace options;
 
-namespace Background
+namespace background
 {
 	void draw()
 	{

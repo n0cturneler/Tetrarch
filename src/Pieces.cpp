@@ -5,14 +5,11 @@
 #include "PieceOffsets.hpp"
 #include "Bag.hpp"
 #include "Wallkicks.hpp"
+#include "Board.hpp"
 #include "Options.hpp"
 using namespace options;
 
 #include "Cell.hpp"
-using Board = std::array<
-	std::array<cell::Cell, options::game::columns>,
-	options::game::rows
->;
 
 #include "Random.hpp"
 
@@ -26,13 +23,14 @@ using Board = std::array<
 #include <cassert>
 #include <vector>
 #include <array>
+#include <optional>
 
 piece::Piece::Piece(grid::Grid2D spawnPos, pieceType::PieceType type, int rotationState)
 	: m_gridPos{spawnPos}, m_type{type}, m_rotationState{rotationState}
 {
 }
 
-void piece::Piece::update(const input::PieceActions& actions, Board& staticPieces, bag::Bag& currentBag, bag::Bag& nextBag)
+void piece::Piece::update(const input::PieceActions& actions, board::Board& curBoard, bag::Bag& currentBag, bag::Bag& nextBag)
 {
 	using ms = std::chrono::milliseconds;
 	auto now{std::chrono::steady_clock::now()};
@@ -41,7 +39,7 @@ void piece::Piece::update(const input::PieceActions& actions, Board& staticPiece
 	{
 		m_leftState.lastPress = now;
 		
-		if (isPositionValid(staticPieces, {-1, 0}))
+		if (isPositionValid(curBoard, {-1, 0}))
 		{	
 			m_lockStart = now;
 			m_gridPos.x -= 1;
@@ -51,7 +49,7 @@ void piece::Piece::update(const input::PieceActions& actions, Board& staticPiece
 	{
 		m_rightState.lastPress = now;
 
-		if (isPositionValid(staticPieces, {1, 0}))
+		if (isPositionValid(curBoard, {1, 0}))
 		{	
 			m_lockStart = now;
 			m_gridPos.x += 1;
@@ -66,7 +64,7 @@ void piece::Piece::update(const input::PieceActions& actions, Board& staticPiece
 		if (duration_l.count() >= game::DAS && duration_arr.count() >= game::ARR)
 		{
 			m_leftState.lastMove = now;
-			if (isPositionValid(staticPieces, {-1, 0}))
+			if (isPositionValid(curBoard, {-1, 0}))
 			{
 				m_lockStart = now;
 				m_gridPos.x -= 1;
@@ -81,7 +79,7 @@ void piece::Piece::update(const input::PieceActions& actions, Board& staticPiece
 		if (duration_r.count() >= game::DAS && duration_arr.count() >= game::ARR)
 		{
 			m_rightState.lastMove = now;
-			if (isPositionValid(staticPieces, {1, 0}))
+			if (isPositionValid(curBoard, {1, 0}))
 			{
 				m_lockStart = now;
 				m_gridPos.x += 1;
@@ -119,7 +117,7 @@ void piece::Piece::update(const input::PieceActions& actions, Board& staticPiece
 	auto duration_grav = std::chrono::duration_cast<ms>(now - m_lastGravityTick);
 	if (duration_grav.count() >= currentDropRate)
 	{
-		if (isPositionValid(staticPieces, {0, 1}))
+		if (isPositionValid(curBoard, {0, 1}))
 		{
 			m_lastGravityTick = now;
 			m_lockStart = now;
@@ -131,21 +129,45 @@ void piece::Piece::update(const input::PieceActions& actions, Board& staticPiece
 	{
 		m_lastGravityTick = now;
 		m_lockStart = now;
-		m_gridPos = getHardDropPos(staticPieces);
-		setStaticData(staticPieces);
-		reset(currentBag, nextBag);
+		m_gridPos = getHardDropPos(curBoard);
+		curBoard.placePiece(*this);
+		reset(currentBag, nextBag, curBoard);
 	}
 
 	auto duration_lock = std::chrono::duration_cast<ms>(now - m_lockStart);
-	if (!isPositionValid(staticPieces, {0, 1}))
+	if (!isPositionValid(curBoard, {0, 1}))
 	{	
 		if (duration_lock.count() >= game::lockDelayMS)
-		{
+		{	
+			m_lastGravityTick = now;
 			m_lockStart = now;
-			setStaticData(staticPieces);
-			reset(currentBag, nextBag);
+			curBoard.placePiece(*this);
+			reset(currentBag, nextBag, curBoard);
 		}
 	}
+}
+
+bool piece::Piece::isPositionValid(const board::Board& curBoard, grid::Grid2D testOffset) const
+{
+	assert(m_type != pieceType::PieceType::none);
+	assert(static_cast<int>(m_type) <= 6);
+	assert(m_rotationState >= 0 && m_rotationState <= 3);
+
+	auto pieceIndex{static_cast<std::size_t>(m_type)};
+	auto rotationState{static_cast<std::size_t>(m_rotationState)};
+	const auto& data{pieceData::Data[pieceIndex][rotationState]};
+
+	for (const grid::Grid2D& offset : data)
+	{
+		grid::Grid2D gridPos{offset + m_gridPos};
+		grid::Grid2D testPos{gridPos + testOffset};
+
+		if (curBoard.isColliding(testPos) || curBoard.isOutOfBounds(testPos))
+		{
+			return false;
+		}
+	}
+	return true;
 }
 
 wallKick::Notation piece::Piece::getWallkickNotation(int offset) const
@@ -212,16 +234,16 @@ wallKick::Notation piece::Piece::getWallkickNotation(int offset) const
 	return wallKick::Notation::Zero_to_R;
 }
 
-grid::Grid2D piece::Piece::testWallkick(wallKick::Notation notation, const Board& staticPieces) const
+std::optional<grid::Grid2D> piece::Piece::testWallkick(wallKick::Notation notation, const board::Board& curBoard) const
 {	
 	for (int i{0}; i <= (game::wallkickAmount - 1); ++i)
 	{
 		if (m_type == pieceType::PieceType::I)
 		{
 			grid::Grid2D offset = wallKick::I[static_cast<std::size_t>(notation)][static_cast<std::size_t>(i)];
-			grid::Grid2D testPos{grid::add(offset, m_gridPos)};
+			grid::Grid2D testPos{offset + m_gridPos};
 
-			if (not isColliding(staticPieces, testPos))
+			if (!curBoard.isColliding(testPos))
 			{
 				return testPos;
 			}
@@ -229,18 +251,18 @@ grid::Grid2D piece::Piece::testWallkick(wallKick::Notation notation, const Board
 		else
 		{	
 			grid::Grid2D offset = wallKick::JLSTZ[static_cast<std::size_t>(notation)][static_cast<std::size_t>(i)];
-			grid::Grid2D testPos{grid::add(offset, m_gridPos)};
+			grid::Grid2D testPos{offset + m_gridPos};
 
-			if (not isColliding(staticPieces, testPos))
+			if (!curBoard.isColliding(testPos))
 			{
 				return testPos;
 			}
 		}
 	}
-	return {};
+	return std::nullopt;
 }
 
-void piece::Piece::draw() const
+void piece::Piece::draw(const board::Board& curBoard) const
 {
 	assert(m_type != pieceType::PieceType::none);
 	assert(static_cast<int>(m_type) <= 6);
@@ -252,13 +274,13 @@ void piece::Piece::draw() const
 
 	for (const grid::Grid2D& offset : data)
 	{
-		grid::Grid2D gridPosition = grid::add(m_gridPos, offset);
-		Vector3 position = grid::gridToWorld(gridPosition);
+		grid::Grid2D gridPosition = {m_gridPos + offset};
+		Vector3 position = {curBoard.boardToWorld(gridPosition)};
 
 		Color mainColor{colors::piece[pieceIndex]};
 		Color borderColor{colors::pieceBorder[pieceIndex]};
 
-		if (isOutOfBounds(gridPosition))
+		if (curBoard.isOutOfBounds({gridPosition.x, gridPosition.y - static_cast<int>(curBoard.bufferRows())}))
 		{
 			mainColor = Fade(mainColor, 0.15f);
 			borderColor = Fade(borderColor, 1.0f);
@@ -269,7 +291,7 @@ void piece::Piece::draw() const
 	}
 }
 
-void piece::Piece::drawGhostPiece(const Board& staticPieces) const
+void piece::Piece::drawGhostPiece(const board::Board& curBoard) const
 {
 	assert(m_type != pieceType::PieceType::none);
 	assert(static_cast<int>(m_type) <= 6);
@@ -281,10 +303,10 @@ void piece::Piece::drawGhostPiece(const Board& staticPieces) const
 
 	for (const grid::Grid2D& offset : data)
 	{
-		grid::Grid2D gridPosition = grid::add(getHardDropPos(staticPieces), offset);
-		Vector3 position = grid::gridToWorld(gridPosition);
+		grid::Grid2D gridPosition = {getHardDropPos(curBoard) + offset};
+		Vector3 position = {curBoard.boardToWorld(gridPosition)};
 
-		if (!isOutOfBounds(gridPosition))
+		if (!curBoard.isOutOfBounds(gridPosition))
 		{
 			Color mainColor{colors::piece[pieceIndex]};
 			Color darkColor = ColorLerp(mainColor, BLACK, 0.8f);
@@ -296,41 +318,14 @@ void piece::Piece::drawGhostPiece(const Board& staticPieces) const
 	}
 }
 
-void piece::Piece::reset(bag::Bag& currentBag, bag::Bag& nextBag)
+void piece::Piece::reset(bag::Bag& currentBag, bag::Bag& nextBag, const board::Board& curBoard)
 {
-	m_gridPos = game::gridSpawn;
+	m_gridPos = curBoard.spawnPos();
 	m_rotationState = 0;
 	m_type = {currentBag.getNextpieceType(nextBag)};
 }
 
-bool piece::Piece::isColliding(const Board& staticPieces, grid::Grid2D testPos) const
-{	
-	if (testPos.x >= 0 &&
-		testPos.x < game::columns &&
-		testPos.y >= 0 &&
-		testPos.y < game::rows)
-	{
-		if (staticPieces[static_cast<std::size_t>(testPos.y)][static_cast<std::size_t>(testPos.x)].type != pieceType::PieceType::none)
-		{
-			return true;
-		}
-	}
-	return false;
-}
-
-bool piece::Piece::isOutOfBounds(grid::Grid2D testPos) const
-{
-	if (testPos.x >= 0 &&
-		testPos.x < game::columns &&
-		testPos.y > -game::bufferRows &&
-		testPos.y < game::rows)
-	{
-		return false;
-	}
-	return true;
-}
-
-bool piece::Piece::isPositionValid(const Board& staticPieces, grid::Grid2D testOffset) const
+grid::Grid2D piece::Piece::getHardDropPos(const board::Board& curBoard) const
 {
 	assert(m_type != pieceType::PieceType::none);
 	assert(static_cast<int>(m_type) <= 6);
@@ -340,43 +335,18 @@ bool piece::Piece::isPositionValid(const Board& staticPieces, grid::Grid2D testO
 	auto rotationState{static_cast<std::size_t>(m_rotationState)};
 	const auto& data{pieceData::Data[pieceIndex][rotationState]};
 
-	for (const grid::Grid2D& offset : data)
-	{
-		grid::Grid2D gridPos{grid::add(offset, m_gridPos)};
-		grid::Grid2D testPos{grid::add(gridPos, testOffset)};
+	int maxY = {static_cast<int>(curBoard.fullRows())};
 
-		if (isColliding(staticPieces, testPos) ||
-			isOutOfBounds(testPos)
-			)
-		{
-			return false;
-		}
-	}
-	return true;
-}
-
-grid::Grid2D piece::Piece::getHardDropPos(const Board& staticPieces) const
-{
-	assert(m_type != pieceType::PieceType::none);
-	assert(static_cast<int>(m_type) <= 6);
-	assert(m_rotationState >= 0 && m_rotationState <= 3);
-
-	auto pieceIndex{static_cast<std::size_t>(m_type)};
-	auto rotationState{static_cast<std::size_t>(m_rotationState)};
-	const auto& data{pieceData::Data[pieceIndex][rotationState]};
-
-	int maxY{game::rows};
-
-	for (int y{0}; y <= (maxY - m_gridPos.y); ++y)
+	for (int y{0}; y <= maxY; ++y)
 	{
 		bool collided{false};
 
 		for (const grid::Grid2D& offset : data)
 		{
-			grid::Grid2D testPos{grid::add(offset, m_gridPos)};
+			grid::Grid2D testPos{offset + m_gridPos};
 			testPos.y += y;
 
-			if (isColliding(staticPieces, testPos) || testPos.y >= maxY)
+			if (curBoard.isColliding(testPos) || testPos.y >= maxY)
 			{
 				collided = true;
 				break;
@@ -389,53 +359,4 @@ grid::Grid2D piece::Piece::getHardDropPos(const Board& staticPieces) const
 		}
 	}
 	return m_gridPos;
-}
-
-void piece::Piece::setStaticData(Board& staticPieces) const
-{
-	assert(m_type != pieceType::PieceType::none);
-	assert(static_cast<int>(m_type) <= 6);
-	assert(m_rotationState >= 0 && m_rotationState <= 3);
-
-	auto pieceIndex{static_cast<std::size_t>(m_type)};
-	auto rotationState{static_cast<std::size_t>(m_rotationState)};
-	const auto& data{pieceData::Data[pieceIndex][rotationState]};
-
-	for (const grid::Grid2D& offset : data)
-	{	
-		grid::Grid2D testPos{grid::add(offset, m_gridPos)};
-
-		if (testPos.x >= 0 &&
-			testPos.x < game::columns &&
-			testPos.y >= 0 &&
-			testPos.y < game::rows)
-		{
-			if (staticPieces[static_cast<std::size_t>(testPos.y)][static_cast<std::size_t>(testPos.x)].type == pieceType::PieceType::none)
-			{
-				staticPieces[static_cast<std::size_t>(testPos.y)][static_cast<std::size_t>(testPos.x)].type = m_type;
-			}
-		}
-	}
-}
-
-void piece::drawStatic(const Board& staticPieces)
-{
-	for (int y{0}; y < game::rows; ++y)
-	{	
-		for (int x{0}; x < game::columns; ++x)
-		{
-			if (staticPieces[static_cast<std::size_t>(y)][static_cast<std::size_t>(x)].type != pieceType::PieceType::none)
-			{	
-				auto pieceIndex{static_cast<std::size_t>(staticPieces[static_cast<std::size_t>(y)][static_cast<std::size_t>(x)].type)};
-
-				Color mainColor{colors::piece[pieceIndex]};
-				Color borderColor{colors::pieceBorder[pieceIndex]};
-
-				Vector3 position = grid::gridToWorld({x, y});
-
-				DrawCube(position, game::cubeSize.x, game::cubeSize.y, game::cubeSize.z, mainColor);
-				DrawCubeWires(position, game::cubeSize.x, game::cubeSize.y, game::cubeSize.z, borderColor);
-			}
-		}
-	}
 }
