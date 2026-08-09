@@ -11,6 +11,7 @@
       "cacheVariables": {
         "CMAKE_C_COMPILER": "clang",
         "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_CXX_FLAGS": "-std=c++23",
         "VCPKG_TARGET_TRIPLET": "x64-windows"
       },
       "condition": {

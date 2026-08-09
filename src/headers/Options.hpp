@@ -4,6 +4,7 @@
 #include <raylib.h>
 
 #include <array>
+#include <chrono>
 
 namespace options
 {
@@ -24,16 +25,16 @@ namespace options
 		
 		inline constexpr int wallkickAmount{5};
 
-		// All of these 5 are in milliseconds(ms)
-		inline constexpr int gravityMS{1000}; 
+		// MS
+		inline constexpr std::chrono::milliseconds gravityMS{1000};
 
-		inline constexpr int DAS{166}; 
-		inline constexpr int ARR{33}; 
+		inline constexpr std::chrono::milliseconds DAS{166}; 
+		inline constexpr std::chrono::milliseconds ARR{33};
 
-		inline constexpr int lockDelayMS{1500}; 
-		inline constexpr int lockDelayLimit{15};
+		inline constexpr std::chrono::milliseconds lockDelayMS{1500};
+		inline constexpr std::chrono::milliseconds lockDelayLimit{15};
 
-		inline constexpr int softdropMS{33}; 
+		inline constexpr std::chrono::milliseconds softdropMS{33}; 
 
 		//Camera
 		inline constexpr float camScrollRate{5.0f};

@@ -59,9 +59,9 @@ namespace board
 	bool Board::isColliding(grid::Grid2D testPos) const
 	{
 		if (testPos.x >= 0 &&
-			testPos.x < m_cols &&
+			testPos.x < static_cast<int>(m_cols) &&
 			testPos.y >= 0 &&
-			testPos.y < m_rows + m_bufferRows)
+			testPos.y < static_cast<int>(m_rows + m_bufferRows))
 		{	
 			if (m_grid[static_cast<std::size_t>(testPos.y)][static_cast<std::size_t>(testPos.x)].type != pieceType::PieceType::none)
 			{
@@ -74,17 +74,17 @@ namespace board
 	bool Board::isOutOfBounds(grid::Grid2D testPos) const
 	{
 		if (testPos.x >= 0 &&
-			testPos.x < m_cols &&
+			testPos.x < static_cast<int>(m_cols) &&
 			testPos.y >= 0 &&
-			testPos.y < m_rows + m_bufferRows)
+			testPos.y < static_cast<int>(m_rows + m_bufferRows))
 		{
 			return false;
 		}
 		return true;
 	}
 
-	void Board::draw() const
-	{
+	void Board::draw() const 
+	{	
 		for (std::size_t y{}; y < m_grid.size(); ++y)
 		{	
 			for (std::size_t x{}; x < m_grid[0].size(); ++x)

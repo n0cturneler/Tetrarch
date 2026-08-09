@@ -112,10 +112,9 @@ void UI::lockDelay(const piece::Piece& activePiece, const board::Board& curBoard
     ImGui::PushStyleColor(ImGuiCol_Text, rlImGuiColors::Convert(colors::uiALT1));
 
     float duration_lock{static_cast<float>(std::chrono::duration_cast<ms>(now - activePiece.lockStart()).count())};
-    float tProgress{duration_lock / static_cast<float>(game::lockDelayMS)};
+    float tProgress{duration_lock / static_cast<float>(game::lockDelayMS.count())};
 
     std::string text{};
-    std::cout << activePiece.gridPos().x << ", " << activePiece.gridPos().y + 1 << '\n';
 
     if (!activePiece.isPositionValid(curBoard, {0, 1}))
     {

@@ -6,6 +6,7 @@
 
 #include <array>
 #include <random>
+#include <optional>
 
 namespace bag
 {
@@ -22,9 +23,18 @@ namespace bag
 	private:
 		void reshuffle(std::mt19937& rng);
 		
-		std::array<pieceType::PieceType, 7> m_data{pieceType::PieceType::I, pieceType::PieceType::J, pieceType::PieceType::L, pieceType::PieceType::O, pieceType::PieceType::S, pieceType::PieceType::T, pieceType::PieceType::Z};
+		std::array<pieceType::PieceType, 7> m_data{pieceType::PieceType::I, 
+			pieceType::PieceType::J, 
+			pieceType::PieceType::L, 
+			pieceType::PieceType::O, 
+			pieceType::PieceType::S, 
+			pieceType::PieceType::T, 
+			pieceType::PieceType::Z};
+
 		std::size_t m_currentIndex{0};
 
+		pieceType::PieceType heldPiece{pieceType::PieceType::none};
+		bool canHold{};
 	};
 
 }

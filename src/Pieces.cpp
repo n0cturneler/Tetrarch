@@ -31,59 +31,42 @@ piece::Piece::Piece(grid::Grid2D spawnPos, pieceType::PieceType type, int rotati
 }
 
 void piece::Piece::update(const input::PieceActions& actions, board::Board& curBoard, bag::Bag& currentBag, bag::Bag& nextBag)
-{
-	using ms = std::chrono::milliseconds;
-	auto now{std::chrono::steady_clock::now()};
-	 
-	if (actions.movLeft)
-	{
-		m_leftState.lastPress = now;
-		
-		if (isPositionValid(curBoard, {-1, 0}))
+{	
+	TimePoint now {Clock::now()};
+
+	if (actions.moveLeft || actions.moveRight)
+	{	
+		m_DASState.lastPress = now; 
+
+		grid::Grid2D movePos{};
+		if (actions.moveDirection == input::MoveDirection::left) { movePos = {-1, 0}; }
+		if (actions.moveDirection == input::MoveDirection::right) { movePos = {1, 0}; }
+
+		if (isPositionValid(curBoard, movePos))
 		{	
+			m_DASState.lastMove = now;
 			m_lockStart = now;
-			m_gridPos.x -= 1;
+
+			m_gridPos.x += movePos.x;
 		} 
 	}
-	if (actions.movRight)
-	{
-		m_rightState.lastPress = now;
 
-		if (isPositionValid(curBoard, {1, 0}))
-		{	
+	if (actions.holdLeft || actions.holdRight)
+	{
+		grid::Grid2D movePos{};
+		if (actions.moveDirection == input::MoveDirection::left) { movePos = {-1, 0}; }
+		if (actions.moveDirection == input::MoveDirection::right) { movePos = {1, 0}; }
+
+		MS elapsedSincePress = std::chrono::duration_cast<MS>(now - m_DASState.lastPress);
+		MS elapsedSinceMove = std::chrono::duration_cast<MS>(now - m_DASState.lastMove);
+
+		if (elapsedSincePress >= game::DAS && elapsedSinceMove >= game::ARR
+			&& isPositionValid(curBoard, movePos)
+			)
+		{
+			m_DASState.lastMove = now;
 			m_lockStart = now;
-			m_gridPos.x += 1;
-		}
-	}
-
-	if (actions.holdLeft)
-	{
-		auto duration_l = std::chrono::duration_cast<ms>(now - m_leftState.lastPress);
-		auto duration_arr = std::chrono::duration_cast<ms>(now - m_leftState.lastMove);
-
-		if (duration_l.count() >= game::DAS && duration_arr.count() >= game::ARR)
-		{
-			m_leftState.lastMove = now;
-			if (isPositionValid(curBoard, {-1, 0}))
-			{
-				m_lockStart = now;
-				m_gridPos.x -= 1;
-			}
-		}
-	}
-	if (actions.holdRight)
-	{
-		auto duration_r = std::chrono::duration_cast<ms>(now - m_rightState.lastPress);
-		auto duration_arr = std::chrono::duration_cast<ms>(now - m_rightState.lastMove); 
-
-		if (duration_r.count() >= game::DAS && duration_arr.count() >= game::ARR)
-		{
-			m_rightState.lastMove = now;
-			if (isPositionValid(curBoard, {1, 0}))
-			{
-				m_lockStart = now;
-				m_gridPos.x += 1;
-			}
+			m_gridPos.x += movePos.x;
 		}
 	}
 
@@ -111,11 +94,11 @@ void piece::Piece::update(const input::PieceActions& actions, board::Board& curB
 	m_rotationState = (m_rotationState + 4) % 4;
 	//if (oldPosition == m_gridPos) m_rotationState = oldRotationState;
 
-	int currentDropRate{game::gravityMS};
+	MS currentDropRate{game::gravityMS};
 	if (actions.softDrop) { currentDropRate = game::softdropMS; }
 
-	auto duration_grav = std::chrono::duration_cast<ms>(now - m_lastGravityTick);
-	if (duration_grav.count() >= currentDropRate)
+	MS duration_grav = std::chrono::duration_cast<MS>(now - m_lastGravityTick);
+	if (duration_grav >= currentDropRate)
 	{
 		if (isPositionValid(curBoard, {0, 1}))
 		{
@@ -134,10 +117,10 @@ void piece::Piece::update(const input::PieceActions& actions, board::Board& curB
 		reset(currentBag, nextBag, curBoard);
 	}
 
-	auto duration_lock = std::chrono::duration_cast<ms>(now - m_lockStart);
+	MS duration_lock = std::chrono::duration_cast<MS>(now - m_lockStart);
 	if (!isPositionValid(curBoard, {0, 1}))
 	{	
-		if (duration_lock.count() >= game::lockDelayMS)
+		if (duration_lock >= game::lockDelayMS)
 		{	
 			m_lastGravityTick = now;
 			m_lockStart = now;

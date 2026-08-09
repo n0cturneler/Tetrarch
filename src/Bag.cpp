@@ -8,7 +8,7 @@
 
 bag::Bag::Bag(std::mt19937& rng)
 {
-	std::shuffle(m_data.begin(), m_data.end(), rng);
+	std::shuffle(m_data.begin(), m_data.end(), rng); 
 }
 
 pieceType::PieceType bag::Bag::getNextpieceType(bag::Bag& nextBag)

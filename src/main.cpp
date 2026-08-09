@@ -48,6 +48,8 @@ int main()
 	board::Board curBoard{options::game::rows, options::game::bufferRows, options::game::columns};
 	piece::Piece activePiece{curBoard.spawnPos(), currentBag.getNextpieceType(nextBag)};
 
+	input::PieceActions currentAction{};
+
 	while (!WindowShouldClose())
 	{
 		[[maybe_unused]] float dt{GetFrameTime()};
@@ -55,7 +57,7 @@ int main()
 		float mouseWheelMovement = GetMouseWheelMove();
 		camera.position = cam::update(camera.position, mouseWheelMovement);
 
-		input::PieceActions currentAction{input::getPieceAction()};
+		currentAction = {input::getPieceAction(currentAction)};
 		activePiece.update(currentAction, curBoard, currentBag, nextBag);
 
 		BeginDrawing();

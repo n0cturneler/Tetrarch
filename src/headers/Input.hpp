@@ -1,11 +1,20 @@
 #pragma once
 
 namespace input
-{
-	struct PieceActions
+{	
+	enum class MoveDirection
 	{
-		bool movLeft{};
-		bool movRight{};
+		none,
+		left,
+		right
+	};
+
+	struct PieceActions
+	{	
+		MoveDirection moveDirection{};
+
+		bool moveLeft{};
+		bool moveRight{};
 
 		bool holdLeft{};
 		bool holdRight{};
@@ -17,8 +26,8 @@ namespace input
 		bool softDrop{};
 		bool hardDrop{};
 
-		bool holdPress{};
+		bool holdPiece{};
 	};
 
-	PieceActions getPieceAction();
+	PieceActions getPieceAction(const PieceActions& curActions);
 }
