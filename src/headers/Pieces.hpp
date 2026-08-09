@@ -59,13 +59,13 @@ namespace piece
 		grid::Grid2D getHardDropPos(const board::Board& curBoard) const;
 
 		grid::Grid2D m_gridPos{0, 0};
-		DASState m_DASState{};
 
+		DASState m_DASState{};
 		TimePoint m_lastGravityTick{Clock::now()};
 		TimePoint m_lockStart{Clock::now()};
 
-		pieceType::PieceType m_type{};
+		pieceType::PieceType m_type{pieceType::PieceType::none};
 		int m_rotationState{0};
-
 	};
+
 }

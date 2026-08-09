@@ -35,11 +35,6 @@ void UI::initialize()
         12.0f
     );
 
-    UI::tetrisFontMedium = io.Fonts->AddFontFromFileTTF(
-        "assets/fonts/TetrisBlocks.ttf",
-        64.0f
-    );
-
     io.FontDefault = mainFont;
 }
 
@@ -163,58 +158,8 @@ void UI::drawBag(bag::Bag& currentBag, bag::Bag& nextBag)
 
     ImGui::Text("Next Pieces:");
 
-    ImGui::BeginTable(" ", 1);
-
-    ImGui::PushFont(UI::tetrisFontMedium);
-    for (std::size_t i{0}; i < 7; ++i)
-    {   
-        ImGui::TableNextRow();
-        ImGui::TableNextColumn();
-
-        if (i >= currentBag.currentIndex())
-        {   
-            ImGui::PushStyleColor(ImGuiCol_Text, rlImGuiColors::Convert(colors::piece[static_cast<std::size_t>(currentBag.data()[i])]));
-
-            std::string text = std::string(textToTetrisFont(pieceType::pieceTypeToString(currentBag.data()[i])));
-            ImGui::Text("%s", text.c_str());
-
-            ImGui::PopStyleColor();
-        }
-    }
-
-    for (std::size_t i{0}; i < currentBag.currentIndex(); ++i)
-    {   
-        ImGui::TableNextRow();
-        ImGui::TableNextColumn();
-
-        std::string text = std::string(textToTetrisFont(pieceType::pieceTypeToString(nextBag.data()[i])));
-
-        ImGui::PushStyleColor(ImGuiCol_Text, rlImGuiColors::Convert(colors::piece[static_cast<std::size_t>(nextBag.data()[i])]));
-        ImGui::Text("%s", text.c_str());
-
-        ImGui::PopStyleColor();
-    }
-
-    ImGui::PopFont();   
-
-    ImGui::EndTable();
-
     ImGui::PopStyleVar(2);
     ImGui::PopStyleColor(4);
 
     ImGui::End();
-}
-
-std::string_view UI::textToTetrisFont(std::string_view text)
-{   
-    if (text == "I") return "G";
-    if (text == "J") return "N";
-    if (text == "L") return "O";
-    if (text == "O") return "B";
-    if (text == "S") return "K";
-    if (text == "T") return "C";
-    if (text == "Z") return "H";
-    if (text == "X") return "T";
-
-    return "???";
 }

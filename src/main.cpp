@@ -3,7 +3,6 @@
 #endif 
 
 #include "Options.hpp"
-#include "Background.hpp"
 #include "PieceType.hpp"
 #include "Pieces.hpp"
 #include "Bag.hpp"
@@ -45,15 +44,21 @@ int main()
 	bag::Bag currentBag{Random::mt};
 	bag::Bag nextBag{Random::mt};
 
-	board::Board curBoard{options::game::rows, options::game::bufferRows, options::game::columns};
+	board::Board curBoard{options::game::rows, 
+		options::game::bufferRows, 
+		options::game::columns, 
+		options::game::scale,
+		options::game::cubeSize, 
+		options::game::gridSpawn,
+		options::game::worldOrigin
+	};
+
 	piece::Piece activePiece{curBoard.spawnPos(), currentBag.getNextpieceType(nextBag)};
 
 	input::PieceActions currentAction{};
 
 	while (!WindowShouldClose())
 	{
-		[[maybe_unused]] float dt{GetFrameTime()};
-
 		float mouseWheelMovement = GetMouseWheelMove();
 		camera.position = cam::update(camera.position, mouseWheelMovement);
 
@@ -65,7 +70,7 @@ int main()
 
 		BeginMode3D(camera);
 			
-			background::draw();
+			curBoard.drawBackground(true);
 
 			activePiece.drawGhostPiece(curBoard);
 			curBoard.draw();

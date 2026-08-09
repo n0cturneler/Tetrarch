@@ -2,7 +2,7 @@
 # project specific logic here.
 
 # Add source to this project's executable.
-add_executable (main  "main.cpp" "Pieces.cpp" "Background.cpp" "UI.cpp"  "Camera.cpp"  "Input.cpp" "Bag.cpp" "PieceType.cpp"  "Board.cpp")
+add_executable (main  "main.cpp" "Pieces.cpp"  "UI.cpp"  "Camera.cpp"  "Input.cpp" "Bag.cpp" "PieceType.cpp"  "Board.cpp")
 
 if(MSVC)
     target_compile_options(main PRIVATE

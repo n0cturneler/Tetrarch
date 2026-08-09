@@ -25,6 +25,8 @@ namespace options
 		
 		inline constexpr int wallkickAmount{5};
 
+		inline constexpr float scale{1.0};
+
 		// MS
 		inline constexpr std::chrono::milliseconds gravityMS{1000};
 
@@ -46,17 +48,11 @@ namespace options
 
 		//Cube
 		inline constexpr Vector3 cubeSize{1.75f, 1.75f, 1.75f};
-		inline constexpr Vector3 halfCube{cubeSize.x * 0.5f, cubeSize.y * 0.5f, cubeSize.z * 0.5f};
 
 		//World
 		inline constexpr Vector3 worldOrigin{0.0f, 0.0f, 0.0f};
 
-		inline constexpr float fullHeight{cubeSize.z * rows};
-		inline constexpr float halfHeight{(cubeSize.z * rows) * 0.5f};
-		inline constexpr float halfWidth{(cubeSize.x * columns) * 0.5f};
-
 		//Grid
-		inline constexpr Vector3 gridOrigin{worldOrigin.x + halfCube.x - halfWidth, halfCube.y, worldOrigin.z - halfHeight + halfCube.z};
 		inline constexpr grid::Grid2D gridSpawn{4, 0};
 
 	}
