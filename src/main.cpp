@@ -24,16 +24,15 @@
 
 int main()
 {
-	SetConfigFlags(FLAG_MSAA_4X_HINT);
-	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+	SetConfigFlags(FLAG_WINDOW_HIGHDPI | FLAG_MSAA_4X_HINT | FLAG_WINDOW_RESIZABLE);
 	// SetConfigFlags(FLAG_FULLSCREEN_MODE);
 
 	InitWindow(0, 0, "3DTRTRIS");
 	MaximizeWindow();
 
-	SetTargetFPS(options::video::frameRate);
-
 	UI::initialize();
+
+	SetTargetFPS(options::video::frameRate);
 
 	Camera3D camera{cam::initialize()};
 
@@ -71,11 +70,10 @@ int main()
 		activePiece.drawGhostPiece(curBoard);
 		curBoard.draw();
 		activePiece.draw(curBoard);
-			
-		EndMode3D();
+
+		UI::drawBag(currentBag, nextBag, curBoard, options::game::bagDisplayCount); // THIS HAS EndMode3D() inside it!!!
 
 		UI::FPS();
-		UI::drawBag(currentBag, nextBag);
 		UI::lockDelay(activePiece, curBoard);
 			
 		EndDrawing();

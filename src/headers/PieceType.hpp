@@ -1,5 +1,7 @@
 #pragma once
 
+#include <raylib.h>
+
 #include <string_view>
 
 namespace pieceType
@@ -15,6 +17,8 @@ namespace pieceType
 		Z,
 		none
 	};
+
+	void draw(PieceType type, Vector3 cubeSize, Vector3 position);
 
 	std::string_view pieceTypeToString(PieceType type);
 }

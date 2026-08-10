@@ -13,11 +13,18 @@ namespace UI
 {	
 	extern Font mainFont;
 	extern Font mainFontBig;
-	extern Font	mainFontSmall;
+	extern Font mainFontSmall;
+
+	extern float fontSpacing;
+
+	extern int screenWidth;
+	extern int screenHeight;
 
 	void initialize();
 
+	Vector2 getCenteredTextPos(const Rectangle& box, float fontSize, const char* text);
+
 	void FPS();
 	void lockDelay(const piece::Piece& activePiece, const board::Board& curBoard);
-	void drawBag(bag::Bag& currentBag, bag::Bag& nextBag);
+	void drawBag(const bag::Bag& currentBag, const bag::Bag& nextBag, const board::Board& curBoard, int bagDisplayCount);
 }

@@ -17,8 +17,8 @@ namespace bag
 
 		pieceType::PieceType getNextpieceType(bag::Bag& nextBag);
 
+		const std::array<pieceType::PieceType, 7>& data() const { return m_data; }
 		std::size_t currentIndex() const { return m_currentIndex; }
-		const std::array<pieceType::PieceType, 7>& data() { return m_data; }
 		pieceType::PieceType peek(std::size_t i) const { return (i < m_data.size()) ? m_data[i] : pieceType::PieceType::none; }
 
 	private:

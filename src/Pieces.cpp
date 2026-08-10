@@ -165,13 +165,13 @@ namespace piece
 		std::size_t rotationState{static_cast<std::size_t>(m_rotationState)};
 		const auto& data{pieceData::Data[pieceIndex][rotationState]};
 
+		Color mainColor{colors::piece[pieceIndex]};
+		Color borderColor{colors::pieceBorder[pieceIndex]};
+
 		for (const grid::Grid2D& offset : data)
 		{
 			grid::Grid2D gridPosition = {m_gridPos + offset};
 			Vector3 position = {curBoard.boardToWorld(gridPosition)};
-
-			Color mainColor{colors::piece[pieceIndex]};
-			Color borderColor{colors::pieceBorder[pieceIndex]};
 
 			if (curBoard.isOutOfBounds({gridPosition.x, gridPosition.y - static_cast<int>(curBoard.bufferRows())}))
 			{
@@ -194,6 +194,9 @@ namespace piece
 		auto rotationState{static_cast<std::size_t>(m_rotationState)};
 		const auto& data{pieceData::Data[pieceIndex][rotationState]};
 
+		Color mainColor{colors::piece[pieceIndex]};
+		Color darkColor = ColorLerp(mainColor, BLACK, 0.8f);
+
 		for (const grid::Grid2D& offset : data)
 		{
 			grid::Grid2D gridPosition = {getHardDropPos(curBoard) + offset};
@@ -201,9 +204,6 @@ namespace piece
 
 			if (!curBoard.isOutOfBounds(gridPosition))
 			{
-				Color mainColor{colors::piece[pieceIndex]};
-				Color darkColor = ColorLerp(mainColor, BLACK, 0.8f);
-
 				DrawCube(position, curBoard.cubeSize().x / 2, curBoard.cubeSize().y / 2, curBoard.cubeSize().z / 2, mainColor);
 				DrawCube(position, curBoard.cubeSize().x, curBoard.cubeSize().y, curBoard.cubeSize().z, Fade(darkColor, 0.75f));
 				DrawCubeWires(position, curBoard.cubeSize().x, curBoard.cubeSize().y, curBoard.cubeSize().z, mainColor);

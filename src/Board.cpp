@@ -33,9 +33,11 @@ namespace board
 
 	Vector3 Board::boardToWorld(grid::Grid2D pos) const
 	{
-		return {m_gridOrigin.x + (static_cast<float>(pos.x) * m_cubeSize.x + m_position.x),
+		return {
+			m_gridOrigin.x + (static_cast<float>(pos.x) * m_cubeSize.x) + m_position.x,
 			m_gridOrigin.y + m_position.y,
-			m_gridOrigin.z + (static_cast<float>(pos.y) * m_cubeSize.z) - (static_cast<float>(m_bufferRows) * m_cubeSize.z) + m_position.z};
+			m_gridOrigin.z + (static_cast<float>(pos.y) * m_cubeSize.z) - (static_cast<float>(m_bufferRows) * m_cubeSize.z) + m_position.z
+		};
 	}
 
 	void Board::placePiece(const piece::Piece& curPiece)

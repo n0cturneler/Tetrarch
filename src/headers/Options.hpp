@@ -21,7 +21,7 @@ namespace options
 
 		inline constexpr int bufferRows{20};
 
-		inline constexpr int bagDisplayCount{5};
+		inline constexpr int bagDisplayCount{3};
 		
 		inline constexpr int wallkickAmount{5};
 
@@ -65,14 +65,17 @@ namespace options
 		inline constexpr Color backgroundBufferLines{50, 50, 50, 255};
 
 		// UI
-		inline constexpr Color uiBG{0, 15, 20, 255};
-		inline constexpr Color uiTitleActive{20, 45, 50, 255};
-		inline constexpr Color uiTitleInactive{10, 35, 40, 255};
+		inline constexpr Color uiBGLight{110, 175, 255, 255};
+		inline constexpr Color uiBGDark{0, 15, 20, 255};
 
-		inline constexpr Color uiALT1{110, 175, 255, 255};
+		inline constexpr Color uiAltLight{118, 214, 157, 255};
+		inline constexpr Color uiAltDark{55, 97, 72, 255};
 
 		inline constexpr Color textLight{180, 215, 255, 255};
 		inline constexpr Color textDark{20, 25, 30, 255};
+
+		inline constexpr Color textGray{140, 140, 140, 255};
+		inline constexpr Color textBlueGray{83, 109, 140, 255};
 
 		//PIECES
 		inline constexpr Color I{5, 255, 205, 255};
