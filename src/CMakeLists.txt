@@ -25,11 +25,18 @@ else()
     )
 endif()
 
+if(CLANG_TIDY_EXE)
+    set_target_properties(main PROPERTIES
+        CXX_CLANG_TIDY "${CLANG_TIDY_EXE};${CLANG_TIDY_CHECKS}"
+        C_CLANG_TIDY   "${CLANG_TIDY_EXE};${CLANG_TIDY_CHECKS}"
+    )
+endif()
+
 # Link Raylib
 target_link_libraries(main PRIVATE raylib)
 
 # Include Raylib and Raygui
-target_include_directories(main PRIVATE SYSTEM  
+target_include_directories(main SYSTEM PRIVATE  
     "${CMAKE_SOURCE_DIR}/external/raylib/src"
     "${CMAKE_SOURCE_DIR}/external/raygui/src"
 )

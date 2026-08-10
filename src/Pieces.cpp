@@ -99,8 +99,8 @@ namespace piece
 		MS currentDropRate{game::gravityMS};
 		if (actions.softDrop) { currentDropRate = game::softdropMS; }
 
-		MS duration_grav = std::chrono::duration_cast<MS>(now - m_lastGravityTick);
-		if (duration_grav >= currentDropRate)
+		MS elapsedSinceGravity = std::chrono::duration_cast<MS>(now - m_lastGravityTick);
+		if (elapsedSinceGravity >= currentDropRate)
 		{
 			if (isPositionValid(curBoard, {0, 1}))
 			{
@@ -119,10 +119,10 @@ namespace piece
 			reset(currentBag, nextBag, curBoard);
 		}
 
-		MS duration_lock = std::chrono::duration_cast<MS>(now - m_lockStart);
+		MS elapsedDurationLock = std::chrono::duration_cast<MS>(now - m_lockStart);
 		if (!isPositionValid(curBoard, {0, 1}))
 		{
-			if (duration_lock >= game::lockDelayMS)
+			if (elapsedDurationLock >= game::lockDelayMS)
 			{
 				m_lastGravityTick = now;
 				m_lockStart = now;

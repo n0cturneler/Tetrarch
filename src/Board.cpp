@@ -126,7 +126,7 @@ namespace board
 				DrawLine3D(startPos, endPos, colors::backgroundBufferLines);
 			}
 
-			for (int i{}; i <= m_cols; ++i)
+			for (std::size_t i{}; i <= m_cols; ++i)
 			{
 				float xPos{m_cubeSize.x * static_cast<float>(i)};
 

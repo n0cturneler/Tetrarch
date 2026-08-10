@@ -33,7 +33,7 @@ namespace UI
 	void UI::FPS()
 	{
 		
-	}
+	} 
 
 	void UI::lockDelay(const piece::Piece& activePiece, const board::Board& curBoard)
 	{
