@@ -2,7 +2,12 @@
 # project specific logic here.
 
 # Add source to this project's executable.
-add_executable (main  "main.cpp" "Pieces.cpp"  "UI.cpp"  "Camera.cpp"  "Input.cpp" "Bag.cpp" "PieceType.cpp"  "Board.cpp")
+add_executable (main  "main.cpp" "Pieces.cpp"  "UI.cpp"  "Camera.cpp"  "Input.cpp" "Bag.cpp" "PieceType.cpp"  "Board.cpp" "raygui_impl.c")
+
+set_source_files_properties("raygui_impl.c" PROPERTIES
+    CMAKE_C_CLANG_TIDY ""
+    CMAKE_CXX_CLANG_TIDY ""
+)
 
 if(MSVC)
     target_compile_options(main PRIVATE
@@ -20,22 +25,18 @@ else()
     )
 endif()
 
-# Include Raylib
-find_package(raylib CONFIG REQUIRED)
+# Link Raylib
 target_link_libraries(main PRIVATE raylib)
+
+# Include Raylib and Raygui
+target_include_directories(main PRIVATE SYSTEM  
+    "${CMAKE_SOURCE_DIR}/external/raylib/src"
+    "${CMAKE_SOURCE_DIR}/external/raygui/src"
+)
 
 # Include Dear ImGui
 find_package(imgui CONFIG REQUIRED)
 target_link_libraries(main PRIVATE imgui::imgui)
-
-# rlImGui wrapper
-target_sources(main PRIVATE
-    ${CMAKE_SOURCE_DIR}/external/rlImGui/rlImGui.cpp
-)
-
-target_include_directories(main PRIVATE
-    ${CMAKE_SOURCE_DIR}/external/rlImGui
-)
 
 # Include headers 
 target_include_directories(main PRIVATE 
@@ -50,6 +51,7 @@ target_include_directories(main PRIVATE
 # 	"${CMAKE_SOURCE_DIR}/libs/lib"
 # )
 
+# Clone game assets to build directory
 add_custom_command(TARGET main POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_SOURCE_DIR}/assets

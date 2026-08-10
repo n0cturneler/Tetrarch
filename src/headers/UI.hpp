@@ -6,16 +6,14 @@
 
 #include <raylib.h>
 
-#include <imgui.h>
-
 #include <chrono>
 #include <string_view>
 
 namespace UI
 {	
-	inline ImFont* mainFont = nullptr;
-	inline ImFont* mainFontBig = nullptr;
-	inline ImFont* mainFontSmall = nullptr;
+	extern Font mainFont;
+	extern Font mainFontBig;
+	extern Font	mainFontSmall;
 
 	void initialize();
 

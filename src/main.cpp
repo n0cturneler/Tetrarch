@@ -16,9 +16,6 @@
 
 #include <raylib.h>
 
-#include <imgui.h>
-#include <rlImGui.h>
-
 #include <iostream> 
 #include <vector>
 #include <cstdint>
@@ -36,7 +33,6 @@ int main()
 
 	SetTargetFPS(options::video::frameRate);
 
-	rlImGuiSetup(true);
 	UI::initialize();
 
 	Camera3D camera{cam::initialize()};
@@ -70,24 +66,20 @@ int main()
 
 		BeginMode3D(camera);
 			
-			curBoard.drawBackground(true);
+		curBoard.drawBackground(true);
 
-			activePiece.drawGhostPiece(curBoard);
-			curBoard.draw();
-			activePiece.draw(curBoard);
+		activePiece.drawGhostPiece(curBoard);
+		curBoard.draw();
+		activePiece.draw(curBoard);
 			
 		EndMode3D();
 
-		rlImGuiBegin();
+		UI::FPS();
+		UI::drawBag(currentBag, nextBag);
+		UI::lockDelay(activePiece, curBoard);
 			
-			UI::FPS();
-			UI::drawBag(currentBag, nextBag);
-			UI::lockDelay(activePiece, curBoard);
-			
-		rlImGuiEnd();
 		EndDrawing();
 	}
 
-	rlImGuiShutdown();
 	CloseWindow();
 }

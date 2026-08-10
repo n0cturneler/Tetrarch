@@ -5,10 +5,8 @@
 #include "Options.hpp"
 using namespace options;
 
+#include <raygui.h>
 #include <raylib.h>
-
-#include <imgui.h>
-#include <rlImGuiColors.h>
 
 #include <chrono>
 #include <format>
@@ -16,150 +14,36 @@ using namespace options;
 #include <string_view>
 #include <iostream>
 
-void UI::initialize()
+namespace UI
 {
-    ImGuiIO& io = ImGui::GetIO();
+	Font mainFont;
+	Font mainFontBig;
+	Font mainFontSmall;
 
-    UI::mainFont = io.Fonts->AddFontFromFileTTF(
-        "assets/fonts/Space_Grotesk.ttf",
-        20.0f
-    );
+	void UI::initialize()
+	{
+		mainFont = LoadFont("assets/fonts/Space_Grotesk.ttf");
+		mainFontBig = LoadFontEx("assets/fonts/Space_Grotesk.ttf", 48, nullptr, 0);
+		mainFontSmall = LoadFontEx("assets/fonts/Space_Grotesk.ttf", 16, nullptr, 0);
 
-    UI::mainFontBig = io.Fonts->AddFontFromFileTTF(
-        "assets/fonts/Space_Grotesk.ttf",
-        48.0f
-    );
+		GuiSetFont(mainFont);
+		GuiSetStyle(DEFAULT, TEXT_SIZE, 24);
+	}
 
-    UI::mainFontSmall = io.Fonts->AddFontFromFileTTF(
-        "assets/fonts/Space_Grotesk.ttf",
-        12.0f
-    );
+	void UI::FPS()
+	{
+		
+	}
 
-    io.FontDefault = mainFont;
-}
+	void UI::lockDelay(const piece::Piece& activePiece, const board::Board& curBoard)
+	{
+		
+	}
 
-void UI::FPS()
-{
-    ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f),
-                            ImGuiCond_Always,
-                            ImVec2(0.0f, 0.0f)); // anchor pos
+	void UI::drawBag(bag::Bag& currentBag, bag::Bag& nextBag)
+	{
+		
+	}
 
-    ImGui::SetNextWindowSize(ImVec2(static_cast<float>(GetScreenWidth()) / 30.0f, static_cast<float>(GetScreenHeight()) / 15.0f), ImGuiCond_Always);
 
-    ImGui::PushStyleColor(ImGuiCol_Text, rlImGuiColors::Convert(colors::textLight));
-    ImGui::PushStyleColor(ImGuiCol_TitleBgActive, rlImGuiColors::Convert(colors::uiTitleActive));
-    ImGui::PushStyleColor(ImGuiCol_TitleBg, rlImGuiColors::Convert(colors::uiTitleActive));
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, rlImGuiColors::Convert(colors::uiBG));
-
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2.0f, 2.0f));
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.0f);
-
-    ImGui::Begin(
-        "FPS",
-        nullptr,
-        ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoResize |
-        ImGuiWindowFlags_NoCollapse |
-        ImGuiWindowFlags_NoSavedSettings
-    );
-
-    ImGui::Text("%.2f", 1.0f / GetFrameTime());
-
-    ImGui::PopStyleVar(2);
-    ImGui::PopStyleColor(4);
-
-    ImGui::End();
-}
-
-void UI::lockDelay(const piece::Piece& activePiece, const board::Board& curBoard)
-{   
-    using ms = std::chrono::milliseconds;
-    auto now{std::chrono::steady_clock::now()};
-
-	ImGui::SetNextWindowPos(ImVec2(static_cast<float>(GetScreenWidth()) / 2.0f, // x
-                            static_cast<float>(GetScreenHeight()) - (static_cast<float>(GetScreenHeight()) / 10.0f)), // y
-                            ImGuiCond_Always, 
-                            ImVec2(0.5f, 0.5f)); // anchor pos
-
-    ImGui::SetNextWindowSize(ImVec2(static_cast<float>(GetScreenWidth()) / 4.0f, static_cast<float>(GetScreenHeight()) / 22.0f), ImGuiCond_Always);
-
-    ImGui::PushStyleColor(ImGuiCol_Text, rlImGuiColors::Convert(colors::textLight));
-    ImGui::PushStyleColor(ImGuiCol_TitleBgActive, rlImGuiColors::Convert(colors::uiTitleActive));
-    ImGui::PushStyleColor(ImGuiCol_TitleBg, rlImGuiColors::Convert(colors::uiTitleActive));
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, rlImGuiColors::Convert(colors::uiBG));
-
-    ImGui::PushStyleColor(ImGuiCol_PlotHistogram, rlImGuiColors::Convert(colors::uiALT1));
-
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2.0f, 2.0f));
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.0f);
-
-    ImGui::PushFont(UI::mainFontSmall);
-
-	ImGui::Begin(
-        "Lock Delay",
-        nullptr,
-        ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoResize |
-        ImGuiWindowFlags_NoCollapse |
-        ImGuiWindowFlags_NoSavedSettings
-    );
-
-    ImGui::PushStyleColor(ImGuiCol_Text, rlImGuiColors::Convert(colors::uiALT1));
-
-    float duration_lock{static_cast<float>(std::chrono::duration_cast<ms>(now - activePiece.lockStart()).count())};
-    float tProgress{duration_lock / static_cast<float>(game::lockDelayMS.count())};
-
-    std::string text{};
-
-    if (!activePiece.isPositionValid(curBoard, {0, 1}))
-    {
-        text = std::format("[{}ms]", duration_lock);
-    } 
-    else
-    {   
-        text = std::format("[{}ms]", 0.0f);
-        tProgress = 0.0f;
-    }
-
-    ImGui::ProgressBar(tProgress, ImVec2(-1.0f, -1.0f), text.c_str());
-    ImGui::PopFont();
-
-    ImGui::PopStyleVar(2);
-    ImGui::PopStyleColor(6);
-    
-    ImGui::End();
-}
-
-void UI::drawBag(bag::Bag& currentBag, bag::Bag& nextBag)
-{
-    ImGui::SetNextWindowPos(ImVec2(static_cast<float>(GetScreenWidth()) / 1.6f,
-                                   static_cast<float>(GetScreenHeight()) / 6.0f),
-                            ImGuiCond_Always,
-                            ImVec2(0.0f, 0.0f)); // anchor pos
-
-    ImGui::SetNextWindowSize(ImVec2(static_cast<float>(GetScreenWidth()) / 15.0f, static_cast<float>(GetScreenHeight()) / 1.8f), ImGuiCond_Always);
-
-    ImGui::PushStyleColor(ImGuiCol_Text, rlImGuiColors::Convert(colors::textLight));
-    ImGui::PushStyleColor(ImGuiCol_TitleBgActive, rlImGuiColors::Convert(colors::uiTitleActive));
-    ImGui::PushStyleColor(ImGuiCol_TitleBg, rlImGuiColors::Convert(colors::uiTitleActive));
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, rlImGuiColors::Convert(colors::uiBG));
-
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2.0f, 2.0f));
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.0f);
-
-    ImGui::Begin(
-        "Bag",
-        nullptr,
-        ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoResize |
-        ImGuiWindowFlags_NoCollapse |
-        ImGuiWindowFlags_NoSavedSettings
-    );
-
-    ImGui::Text("Next Pieces:");
-
-    ImGui::PopStyleVar(2);
-    ImGui::PopStyleColor(4);
-
-    ImGui::End();
 }

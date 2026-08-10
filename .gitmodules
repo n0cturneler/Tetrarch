@@ -1,4 +1,6 @@
-[submodule "external/rlImGui"]
-	path = external/rlImGui
-	url = https://github.com/raylib-extras/rlImGui
-	branch = RL55ImGui19207
+[submodule "external/raylib"]
+	path = external/raylib
+	url = https://github.com/raysan5/raylib
+[submodule "external/raygui"]
+	path = external/raygui
+	url = https://github.com/raysan5/raygui
