@@ -17,11 +17,6 @@
 #include <chrono>
 #include <optional>
 
-namespace board
-{
-	class Board;
-}
-
 namespace piece
 {	
 	using Clock = std::chrono::steady_clock;
@@ -42,6 +37,7 @@ namespace piece
 		pieceType::PieceType type() const { return m_type; }
 		int rotationState() const { return m_rotationState; }
 		grid::Grid2D gridPos() const { return m_gridPos; }
+
 		TimePoint lockStart() const { return m_lockStart; }
 
 		void update(const input::PieceActions& actions, board::Board& curBoard, bag::Bag& currentBag, bag::Bag& nextBag);

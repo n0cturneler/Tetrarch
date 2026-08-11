@@ -25,6 +25,15 @@ namespace UI
 	Vector2 getCenteredTextPos(const Rectangle& box, float fontSize, const char* text);
 
 	void FPS();
+
 	void lockDelay(const piece::Piece& activePiece, const board::Board& curBoard);
-	void drawBag(const bag::Bag& currentBag, const bag::Bag& nextBag, const board::Board& curBoard, int bagDisplayCount);
+
+	void drawBag2D();
+	void drawBag3D(const bag::Bag& currentBag, const bag::Bag& nextBag, const board::Board& curBoard, int bagDisplayCount);
+
+	void attackBar();
+	void attackStats();
+
+	void pieceStats(const board::Board& curBoard);
+	void time();
 }

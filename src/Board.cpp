@@ -12,7 +12,9 @@ using namespace options;
 #include <raymath.h>
 
 #include <cassert>
+#include <vector>
 #include <array>
+#include <chrono>
 
 namespace board
 {	
@@ -29,6 +31,8 @@ namespace board
 		assert(rows > 0);
 		assert(cols > 0);
 		assert(bufferRows > 0);
+
+		m_startTime = Clock::now();
 	}
 
 	Vector3 Board::boardToWorld(grid::Grid2D pos) const

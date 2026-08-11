@@ -22,11 +22,12 @@ namespace UI
 	Font mainFontSmall;
 
 	float fontSpacing{2.0f};
+	float borderThickness{5.0f};
 
 	int screenWidth{};
 	int screenHeight{};
 
-	void UI::initialize()
+	void initialize()
 	{	
 		screenWidth = GetScreenWidth();
 		screenHeight = GetScreenHeight();
@@ -57,7 +58,7 @@ namespace UI
 		GuiSetStyle(PROGRESSBAR, TEXT_COLOR_NORMAL, ColorToInt(colors::textBlueGray));
 	}
 
-	Vector2 UI::getCenteredTextPos(const Rectangle& box, float fontSize, const char* text)
+	Vector2 getCenteredTextPos(const Rectangle& box, float fontSize, const char* text)
 	{
 		Vector2 textSize = {MeasureTextEx(mainFont, text, fontSize, fontSpacing)};
 		return {
@@ -66,7 +67,7 @@ namespace UI
 		};
 	}
 
-	void UI::FPS()
+	void FPS()
 	{
 		int fps{GetFPS()};
 
@@ -85,7 +86,7 @@ namespace UI
 		DrawTextEx(mainFont, text.c_str(), textPos, fontSize, fontSpacing, colors::textDark);
 	} 
 
-    void UI::lockDelay(const piece::Piece& activePiece, const board::Board& curBoard)
+    void lockDelay(const piece::Piece& activePiece, const board::Board& curBoard)
     {
         using ms = std::chrono::milliseconds;
         auto now{std::chrono::steady_clock::now()};
@@ -120,62 +121,77 @@ namespace UI
 		GuiSetStyle(DEFAULT, TEXT_COLOR_NORMAL, ColorToInt(colors::textLight));
     }
 
-
-	void UI::drawBag(const bag::Bag& currentBag, const bag::Bag& nextBag, const board::Board& curBoard, int bagDisplayCount)
+	void drawBag2D()
 	{
-		Vector3 defaultPosition{20.0f, 0.0f, -10.0f};
-
-		float pieceSpacing{7.5};
-
-		for (std::size_t i{}; i < bagDisplayCount; ++i)
-		{	
-			Vector3 offset{0, 0, static_cast<float>(i) * pieceSpacing};
-			Vector3 position{Vector3Add(defaultPosition, offset)};
-
-			if ((currentBag.currentIndex() + i) >= currentBag.data().size())
-			{	
-				pieceType::draw(nextBag.peek(currentBag.currentIndex() + i - 7), curBoard.cubeSize(), position);
-			}
-			else
-			{
-				pieceType::draw(currentBag.peek(currentBag.currentIndex() + i), curBoard.cubeSize(), position);
-			}
-		}
-
-		EndMode3D();
-
-		float roundness{0.1f};
-		int segments{2};
+		float roundness{0.05f};
+		int segments{1};
 
 		float headerWidth{200.0f};
 		float headerHeight{30.0f};
 
 		float boxWidth{200.0f};
-		float boxHeight{30.0f};
+		float boxHeight{500.0f};
 
 		Rectangle header = {
-			(static_cast<float>(screenWidth) / 1.4f) - (headerWidth / 2.0f),
+			(static_cast<float>(screenWidth) / 1.505f) - (headerWidth / 2.0f),
 			(static_cast<float>(screenHeight) / 5.0f) - (headerHeight / 2.0f),
 			headerWidth,
 			headerHeight
 		};
 
 		Rectangle box = {
-			(static_cast<float>(screenWidth) / 1.4f) - (headerWidth / 2.0f),
-			(static_cast<float>(screenHeight) / 5.0f) - (headerHeight / 2.0f),
-			headerWidth,
-			headerHeight
+			(static_cast<float>(screenWidth) / 1.505f) - (boxWidth / 2.0f),
+			(static_cast<float>(screenHeight) / 4.5f),
+			boxWidth,
+			boxHeight
 		};
 
 		DrawRectangleRounded(header, roundness, segments, colors::uiBGLight);
 		DrawRectangleRoundedLines(header, roundness, segments, colors::textGray);
+
+		DrawRectangleRounded(box, roundness, segments, colors::uiBGDark);
+		DrawRectangleRoundedLinesEx(box, roundness, segments, borderThickness, colors::uiBGLight);
 
 		float fontSize{static_cast<float>(mainFont.baseSize)};
 		std::string text{"Next Pieces: "};
 
 		Vector2 textPos{getCenteredTextPos(header, fontSize, text.c_str())};
 		DrawTextEx(mainFont, text.c_str(), textPos, fontSize, fontSpacing, colors::textDark);
+	}
 
+	void drawBag3D(const bag::Bag& currentBag, const bag::Bag& nextBag, const board::Board& curBoard, int bagDisplayCount)
+	{
+		Vector3 defaultPosition{15.0f, 0.0f, -11.0f};
+
+		float scale{0.9f};
+		Vector3 cubeSize{Vector3Scale(curBoard.cubeSize(), scale)};
+
+		float pieceSpacing{cubeSize.z * 3.0f};
+
+		for (std::size_t i{}; i < static_cast<std::size_t>(bagDisplayCount); ++i)
+		{	
+			Vector3 offset{0, 0, static_cast<float>(i) * pieceSpacing};
+			Vector3 position{Vector3Add(defaultPosition, offset)};
+
+			if ((currentBag.currentIndex() + i) >= currentBag.data().size())
+			{	
+				pieceType::draw(nextBag.peek(currentBag.currentIndex() + i - 7), cubeSize, position);
+			}
+			else
+			{
+				pieceType::draw(currentBag.peek(currentBag.currentIndex() + i), cubeSize, position);
+			}
+		}
+	}
+
+	void pieceStats(const board::Board& curBoard)
+	{
 
 	}
+
+	void time()
+	{
+
+	}
+
 }

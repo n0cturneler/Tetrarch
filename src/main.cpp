@@ -39,7 +39,8 @@ int main()
 	bag::Bag currentBag{Random::mt};
 	bag::Bag nextBag{Random::mt};
 
-	board::Board curBoard{options::game::rows, 
+	board::Board curBoard{
+		options::game::rows, 
 		options::game::bufferRows, 
 		options::game::columns, 
 		options::game::scale,
@@ -49,7 +50,6 @@ int main()
 	};
 
 	piece::Piece activePiece{curBoard.spawnPos(), currentBag.getNextpieceType(nextBag)};
-
 	input::PieceActions currentAction{};
 
 	while (!WindowShouldClose())
@@ -63,18 +63,22 @@ int main()
 		BeginDrawing();
 		ClearBackground(options::colors::background);
 
+			UI::drawBag2D();
+
 		BeginMode3D(camera);
 			
-		curBoard.drawBackground(true);
+			curBoard.drawBackground(true);
 
-		activePiece.drawGhostPiece(curBoard);
-		curBoard.draw();
-		activePiece.draw(curBoard);
+			activePiece.drawGhostPiece(curBoard);
+			curBoard.draw();
+			activePiece.draw(curBoard);
 
-		UI::drawBag(currentBag, nextBag, curBoard, options::game::bagDisplayCount); // THIS HAS EndMode3D() inside it!!!
+			UI::drawBag3D(currentBag, nextBag, curBoard, options::game::bagDisplayCount); 
 
-		UI::FPS();
-		UI::lockDelay(activePiece, curBoard);
+		EndMode3D();
+
+			UI::FPS();
+			UI::lockDelay(activePiece, curBoard);
 			
 		EndDrawing();
 	}

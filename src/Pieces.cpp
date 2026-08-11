@@ -35,6 +35,7 @@ namespace piece
 	void Piece::update(const input::PieceActions& actions, board::Board& curBoard, bag::Bag& currentBag, bag::Bag& nextBag)
 	{
 		TimePoint now{Clock::now()};
+		m_DASState.lastPress = actions.lastPress;
 
 		if (actions.moveLeft || actions.moveRight)
 		{
@@ -48,7 +49,6 @@ namespace piece
 			{
 				m_DASState.lastMove = now;
 				m_lockStart = now;
-
 				m_gridPos.x += movePos.x;
 			}
 		}
@@ -72,8 +72,8 @@ namespace piece
 			}
 		}
 
-		int oldRotationState{m_rotationState};
-		grid::Grid2D oldPosition{m_gridPos};
+		//int oldRotationState{m_rotationState};
+		//grid::Grid2D oldPosition{m_gridPos};
 
 		if (actions.rotLeft)
 		{
@@ -173,11 +173,11 @@ namespace piece
 			grid::Grid2D gridPosition = {m_gridPos + offset};
 			Vector3 position = {curBoard.boardToWorld(gridPosition)};
 
-			if (curBoard.isOutOfBounds({gridPosition.x, gridPosition.y - static_cast<int>(curBoard.bufferRows())}))
+			/*if (curBoard.isOutOfBounds({gridPosition.x, gridPosition.y - static_cast<int>(curBoard.bufferRows())}))
 			{
 				mainColor = Fade(mainColor, 0.15f);
 				borderColor = Fade(borderColor, 1.0f);
-			}
+			}*/
 
 			DrawCube(position, curBoard.cubeSize().x, curBoard.cubeSize().y, curBoard.cubeSize().z, mainColor);
 			DrawCubeWires(position, curBoard.cubeSize().x, curBoard.cubeSize().y, curBoard.cubeSize().z, borderColor);

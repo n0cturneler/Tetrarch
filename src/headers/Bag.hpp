@@ -15,6 +15,7 @@ namespace bag
 	public:
 		Bag(std::mt19937& rng);
 
+
 		pieceType::PieceType getNextpieceType(bag::Bag& nextBag);
 
 		const std::array<pieceType::PieceType, 7>& data() const { return m_data; }

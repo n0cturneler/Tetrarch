@@ -21,7 +21,7 @@ namespace options
 
 		inline constexpr int bufferRows{20};
 
-		inline constexpr int bagDisplayCount{3};
+		inline constexpr int bagDisplayCount{5};
 		
 		inline constexpr int wallkickAmount{5};
 
@@ -30,7 +30,7 @@ namespace options
 		// MS
 		inline constexpr std::chrono::milliseconds gravityMS{1000};
 
-		inline constexpr std::chrono::milliseconds DAS{166}; 
+		inline constexpr std::chrono::milliseconds DAS{133}; 
 		inline constexpr std::chrono::milliseconds ARR{33};
 
 		inline constexpr std::chrono::milliseconds lockDelayMS{1500};
@@ -53,7 +53,7 @@ namespace options
 		inline constexpr Vector3 worldOrigin{0.0f, 0.0f, 0.0f};
 
 		//Grid
-		inline constexpr grid::Grid2D gridSpawn{4, 0};
+		inline constexpr grid::Grid2D gridSpawn{4, -1};
 
 	}
 

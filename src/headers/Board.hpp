@@ -3,6 +3,7 @@
 #include "Cell.hpp"
 
 #include <vector>
+#include <chrono>
 
 namespace piece
 {
@@ -11,17 +12,25 @@ namespace piece
 
 namespace board
 {	
+	using Clock = std::chrono::steady_clock;
+	using TimePoint = Clock::time_point;
+	using MS = std::chrono::milliseconds;
+
 	class Board
 	{
 	public:
-		Board(std::size_t rows, std::size_t bufferRows, std::size_t cols, float scale, Vector3 cubeSize, grid::Grid2D gridSpawn = {4,0}, Vector3 position = {});
+		Board(std::size_t rows, std::size_t bufferRows, std::size_t cols, float scale, Vector3 cubeSize, grid::Grid2D gridSpawn = {4,1}, Vector3 position = {});
 
-		grid::Grid2D spawnPos() const { return m_gridSpawn; }
 		float scale() const { return m_scale; }
-		Vector3 cubeSize() const { return m_cubeSize; }
+		int pieceCount() const { return m_pieceCount; }
+		TimePoint startTime() const { return m_startTime; }
+
 		std::size_t bufferRows() const { return m_bufferRows; }
 		std::size_t fullRows() const { return m_rows + m_bufferRows; }
 
+		grid::Grid2D spawnPos() const { return m_gridSpawn; }
+
+		Vector3 cubeSize() const { return m_cubeSize; }
 		Vector3 boardToWorld(grid::Grid2D pos) const;
 
 		void placePiece(const piece::Piece& curPiece);
@@ -51,6 +60,10 @@ namespace board
 		
 		Vector3 m_position{};
 		Vector3 m_gridOrigin{m_position.x + m_halfCube.x - m_halfWidth, m_halfCube.y, m_position.z - m_halfHeight + m_halfCube.z};
+
+		int m_pieceCount{};
+
+		TimePoint m_startTime{Clock::now()};
 
 		std::vector<std::vector<cell::Cell>> m_grid;
 	};
