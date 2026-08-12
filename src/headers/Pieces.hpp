@@ -40,8 +40,7 @@ namespace piece
 
 		TimePoint lockStart() const { return m_lockStart; }
 
-		void update(const input::PieceActions& actions, board::Board& curBoard, bag::Bag& currentBag, bag::Bag& nextBag);
-		void reset(bag::Bag& currentBag, bag::Bag& nextBag, const board::Board& curBoard);
+		void update(const input::PieceActions& actions, board::Board& curBoard);
 
 		void draw(const board::Board& curBoard) const;
 		void drawGhostPiece(const board::Board& curBoard) const;
@@ -49,6 +48,8 @@ namespace piece
 		bool isPositionValid(const board::Board& curBoard, grid::Grid2D testOffset = {}) const;
 
 	private:
+		void reset(grid::Grid2D spawnPos, pieceType::PieceType nextPieceType, TimePoint now);
+
 		std::optional<grid::Grid2D> testWallkick(wallKick::Notation notation, const board::Board& curBoard) const; 
 		wallKick::Notation getWallkickNotation(int offset) const;
 

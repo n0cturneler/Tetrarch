@@ -32,10 +32,15 @@ namespace piece
 	{
 	}
 
-	void Piece::update(const input::PieceActions& actions, board::Board& curBoard, bag::Bag& currentBag, bag::Bag& nextBag)
+	void Piece::update(const input::PieceActions& actions, board::Board& curBoard)
 	{
 		TimePoint now{Clock::now()};
 		m_DASState.lastPress = actions.lastPress;
+
+		if (actions.holdPiece)
+		{
+			m_type = curBoard.holdPiece(*this);
+		}
 
 		if (actions.moveLeft || actions.moveRight)
 		{
@@ -112,11 +117,9 @@ namespace piece
 
 		if (actions.hardDrop)
 		{
-			m_lastGravityTick = now;
-			m_lockStart = now;
 			m_gridPos = getHardDropPos(curBoard);
 			curBoard.placePiece(*this);
-			reset(currentBag, nextBag, curBoard);
+			reset(curBoard.spawnPos(), curBoard.getNextPieceType(), now);
 		}
 
 		MS elapsedDurationLock = std::chrono::duration_cast<MS>(now - m_lockStart);
@@ -124,12 +127,19 @@ namespace piece
 		{
 			if (elapsedDurationLock >= game::lockDelayMS)
 			{
-				m_lastGravityTick = now;
-				m_lockStart = now;
 				curBoard.placePiece(*this);
-				reset(currentBag, nextBag, curBoard);
+				reset(curBoard.spawnPos(), curBoard.getNextPieceType(), now);
 			}
 		}
+	}
+
+	void Piece::reset(grid::Grid2D spawnPos, pieceType::PieceType nextPieceType, TimePoint now)
+	{
+		m_lastGravityTick = now;
+		m_lockStart = now;
+		m_gridPos = spawnPos;
+		m_rotationState = 0;
+		m_type = {nextPieceType};
 	}
 
 	bool Piece::isPositionValid(const board::Board& curBoard, grid::Grid2D testOffset) const
@@ -156,10 +166,12 @@ namespace piece
 	}
 
 	void Piece::draw(const board::Board& curBoard) const
-	{
+	{	
 		assert(m_type != pieceType::PieceType::none);
 		assert(static_cast<int>(m_type) <= 6);
 		assert(m_rotationState >= 0 && m_rotationState <= 3);
+
+		if (m_type == pieceType::PieceType::none) { return; }
 
 		std::size_t pieceIndex{static_cast<std::size_t>(m_type)};
 		std::size_t rotationState{static_cast<std::size_t>(m_rotationState)};
@@ -185,10 +197,12 @@ namespace piece
 	}
 
 	void Piece::drawGhostPiece(const board::Board& curBoard) const
-	{
+	{	
 		assert(m_type != pieceType::PieceType::none);
 		assert(static_cast<int>(m_type) <= 6);
 		assert(m_rotationState >= 0 && m_rotationState <= 3);
+
+		if (m_type == pieceType::PieceType::none) { return; }
 
 		auto pieceIndex{static_cast<std::size_t>(m_type)};
 		auto rotationState{static_cast<std::size_t>(m_rotationState)};
@@ -211,13 +225,6 @@ namespace piece
 		}
 	}
 
-	void Piece::reset(bag::Bag& currentBag, bag::Bag& nextBag, const board::Board& curBoard)
-	{
-		m_gridPos = curBoard.spawnPos();
-		m_rotationState = 0;
-		m_type = {currentBag.getNextpieceType(nextBag)};
-	}
-
 	grid::Grid2D Piece::getHardDropPos(const board::Board& curBoard) const
 	{
 		assert(m_type != pieceType::PieceType::none);
@@ -228,7 +235,7 @@ namespace piece
 		auto rotationState{static_cast<std::size_t>(m_rotationState)};
 		const auto& data{pieceData::Data[pieceIndex][rotationState]};
 
-		int maxY = {static_cast<int>(curBoard.fullRows())};
+		int maxY{static_cast<int>(curBoard.fullRows())};
 
 		for (int y{0}; y <= maxY; ++y)
 		{
@@ -262,7 +269,6 @@ namespace piece
 		testState = (testState + 4) % 4;
 
 		assert(testState >= 0 && testState <= 3);
-		assert(testState >= 0 && testState <= 3);
 
 		// L is 3, R is 1, 2 is ofc 2
 
@@ -270,52 +276,32 @@ namespace piece
 		{
 		case 0:
 		{
-			if (testState == 3)
-			{
-				return wallKick::Notation::Zero_to_L;
-			}
-			if (testState == 1)
-			{
-				return wallKick::Notation::Zero_to_R;
-			}
+			if (testState == 3) return wallKick::Notation::Zero_to_L;		
+			if (testState == 1) return wallKick::Notation::Zero_to_R;
+			break;
 		}
 		case 1:
 		{
-			if (testState == 2)
-			{
-				return wallKick::Notation::R_to_Two;
-			}
-			if (testState == 0)
-			{
-				return wallKick::Notation::R_to_Zero;
-			}
+			if (testState == 2)	return wallKick::Notation::R_to_Two;
+			if (testState == 0) return wallKick::Notation::R_to_Zero;
+			break;
 		}
 		case 2:
 		{
-			if (testState == 3)
-			{
-				return wallKick::Notation::Two_to_L;
-			}
-			if (testState == 1)
-			{
-				return wallKick::Notation::Two_to_R;
-			}
+			if (testState == 3) return wallKick::Notation::Two_to_L;
+			if (testState == 1) return wallKick::Notation::Two_to_R;
+			break;
 		}
 		case 3:
 		{
-			if (testState == 2)
-			{
-				return wallKick::Notation::L_to_Two;
-			}
-			if (testState == 0)
-			{
-				return wallKick::Notation::L_to_Zero;
-			}
+			if (testState == 2) return wallKick::Notation::L_to_Two;
+			if (testState == 0) return wallKick::Notation::L_to_Zero;
+			break;
 		}
 		default:
 			break;
 		}
-		return wallKick::Notation::Zero_to_R;
+		return wallKick::Notation::Invalid;
 	}
 
 	std::optional<grid::Grid2D> Piece::testWallkick(wallKick::Notation notation, const board::Board& curBoard) const

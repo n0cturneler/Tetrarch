@@ -1,9 +1,11 @@
 #pragma once
 
 #include "Cell.hpp"
+#include "Bag.hpp"
 
 #include <vector>
 #include <chrono>
+#include <cstdint>
 
 namespace piece
 {
@@ -22,7 +24,7 @@ namespace board
 		Board(std::size_t rows, std::size_t bufferRows, std::size_t cols, float scale, Vector3 cubeSize, grid::Grid2D gridSpawn = {4,1}, Vector3 position = {});
 
 		float scale() const { return m_scale; }
-		int pieceCount() const { return m_pieceCount; }
+		std::uint64_t pieceCount() const { return m_pieceCount; }
 		TimePoint startTime() const { return m_startTime; }
 
 		std::size_t bufferRows() const { return m_bufferRows; }
@@ -41,7 +43,18 @@ namespace board
 		void draw() const;
 		void drawBackground(bool drawBuffer) const;
 
+		pieceType::PieceType getNextPieceType();
+
+		pieceType::PieceType holdPiece(const piece::Piece& curPiece);
+		pieceType::PieceType getHeldPiece() const { return m_heldPiece; }
+
+		const bag::Bag& currentBag() const { return m_currentBag; }
+		const bag::Bag& nextBag() const { return m_nextBag; }
+
 	private:
+		bag::Bag m_currentBag;
+		bag::Bag m_nextBag;
+
 		std::size_t m_rows{};
 		std::size_t m_bufferRows{};
 		std::size_t m_cols{};
@@ -61,7 +74,9 @@ namespace board
 		Vector3 m_position{};
 		Vector3 m_gridOrigin{m_position.x + m_halfCube.x - m_halfWidth, m_halfCube.y, m_position.z - m_halfHeight + m_halfCube.z};
 
-		int m_pieceCount{};
+		pieceType::PieceType m_heldPiece{pieceType::PieceType::none};
+		bool m_canHold{true};
+		std::uint64_t m_pieceCount{};
 
 		TimePoint m_startTime{Clock::now()};
 

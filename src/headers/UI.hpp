@@ -29,7 +29,7 @@ namespace UI
 	void lockDelay(const piece::Piece& activePiece, const board::Board& curBoard);
 
 	void drawBag2D();
-	void drawBag3D(const bag::Bag& currentBag, const bag::Bag& nextBag, const board::Board& curBoard, int bagDisplayCount);
+	void drawBag3D(const board::Board& curBoard, int bagDisplayCount);
 
 	void attackBar();
 	void attackStats();

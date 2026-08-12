@@ -19,6 +19,7 @@ namespace wallKick
 		L_to_Two,
 		L_to_Zero,
 		Zero_to_L,
+		Invalid
 	};
 
 	inline constexpr Grid2D SRStoGrid(grid::Grid2D SRSpos)

@@ -36,9 +36,6 @@ int main()
 
 	Camera3D camera{cam::initialize()};
 
-	bag::Bag currentBag{Random::mt};
-	bag::Bag nextBag{Random::mt};
-
 	board::Board curBoard{
 		options::game::rows, 
 		options::game::bufferRows, 
@@ -49,7 +46,7 @@ int main()
 		options::game::worldOrigin
 	};
 
-	piece::Piece activePiece{curBoard.spawnPos(), currentBag.getNextpieceType(nextBag)};
+	piece::Piece activePiece{curBoard.spawnPos(), curBoard.getNextPieceType()};
 	input::PieceActions currentAction{};
 
 	while (!WindowShouldClose())
@@ -58,7 +55,7 @@ int main()
 		camera.position = cam::update(camera.position, mouseWheelMovement);
 
 		currentAction = {input::getPieceAction(currentAction)};
-		activePiece.update(currentAction, curBoard, currentBag, nextBag);
+		activePiece.update(currentAction, curBoard);
 
 		BeginDrawing();
 		ClearBackground(options::colors::background);
@@ -73,7 +70,7 @@ int main()
 			curBoard.draw();
 			activePiece.draw(curBoard);
 
-			UI::drawBag3D(currentBag, nextBag, curBoard, options::game::bagDisplayCount); 
+			UI::drawBag3D(curBoard, options::game::bagDisplayCount); 
 
 		EndMode3D();
 

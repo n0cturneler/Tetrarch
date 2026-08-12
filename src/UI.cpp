@@ -159,7 +159,7 @@ namespace UI
 		DrawTextEx(mainFont, text.c_str(), textPos, fontSize, fontSpacing, colors::textDark);
 	}
 
-	void drawBag3D(const bag::Bag& currentBag, const bag::Bag& nextBag, const board::Board& curBoard, int bagDisplayCount)
+	void drawBag3D(const board::Board& curBoard, int bagDisplayCount)
 	{
 		Vector3 defaultPosition{15.0f, 0.0f, -11.0f};
 
@@ -173,13 +173,13 @@ namespace UI
 			Vector3 offset{0, 0, static_cast<float>(i) * pieceSpacing};
 			Vector3 position{Vector3Add(defaultPosition, offset)};
 
-			if ((currentBag.currentIndex() + i) >= currentBag.data().size())
+			if ((curBoard.currentBag().currentIndex() + i) >= curBoard.currentBag().data().size())
 			{	
-				pieceType::draw(nextBag.peek(currentBag.currentIndex() + i - 7), cubeSize, position);
+				pieceType::draw(curBoard.nextBag().peek(curBoard.currentBag().currentIndex() + i - 7), cubeSize, position);
 			}
 			else
 			{
-				pieceType::draw(currentBag.peek(currentBag.currentIndex() + i), cubeSize, position);
+				pieceType::draw(curBoard.currentBag().peek(curBoard.currentBag().currentIndex() + i), cubeSize, position);
 			}
 		}
 	}

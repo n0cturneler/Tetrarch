@@ -7,6 +7,7 @@ using namespace options;
 #include "PieceType.hpp"
 #include "Pieces.hpp"
 #include "PieceOffsets.hpp"
+#include "Random.hpp"
 
 #include <raylib.h>
 #include <raymath.h>
@@ -19,7 +20,9 @@ using namespace options;
 namespace board
 {	
 	Board::Board(std::size_t rows, std::size_t bufferRows, std::size_t cols, float scale, Vector3 cubeSize, grid::Grid2D gridSpawn, Vector3 position)
-		: m_rows{rows},
+		: m_currentBag{Random::mt},
+		m_nextBag{Random::mt},
+		m_rows{rows},
 		m_bufferRows{bufferRows},
 		m_cols{cols},
 		m_scale{scale},
@@ -45,7 +48,9 @@ namespace board
 	}
 
 	void Board::placePiece(const piece::Piece& curPiece)
-	{
+	{	
+		m_canHold = true;
+
 		assert(curPiece.type() != pieceType::PieceType::none);
 		assert(static_cast<int>(curPiece.type()) <= 6);
 		assert(curPiece.rotationState() >= 0 && curPiece.rotationState() <= 3);
@@ -66,6 +71,23 @@ namespace board
 				}
 			}
 		}
+	}
+
+	pieceType::PieceType Board::getNextPieceType()
+	{
+		return m_currentBag.getNextpieceType(m_nextBag);
+	}
+
+	pieceType::PieceType Board::holdPiece(const piece::Piece& curPiece)
+	{	
+		if (!m_canHold) { return curPiece.type(); }
+	
+		m_canHold = false;
+		pieceType::PieceType heldType{m_heldPiece};
+		m_heldPiece = curPiece.type();
+
+		if (heldType != pieceType::PieceType::none)	return heldType;
+		return getNextPieceType();
 	}
 
 	bool Board::isColliding(grid::Grid2D testPos) const

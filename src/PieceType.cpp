@@ -13,7 +13,9 @@ using namespace options;
 namespace pieceType
 {
 	void draw(PieceType type, Vector3 cubeSize, Vector3 posOffset)
-	{
+	{	
+		if (type == PieceType::none) { return; }
+
 		std::size_t pieceIndex{static_cast<std::size_t>(type)};
 		std::size_t rotationState{0};
 		const auto& data{pieceData::Data[pieceIndex][rotationState]};
