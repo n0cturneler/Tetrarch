@@ -50,8 +50,8 @@ namespace piece
 	private:
 		void reset(grid::Grid2D spawnPos, pieceType::PieceType nextPieceType, TimePoint now);
 
-		std::optional<grid::Grid2D> testWallkick(wallKick::Notation notation, const board::Board& curBoard) const; 
-		wallKick::Notation getWallkickNotation(int offset) const;
+		std::optional<grid::Grid2D> testWallkick(const board::Board& curBoard, int rotationOffset, wallKick::Notation notation) const;
+		wallKick::Notation getWallkickNotation(int rotationOffset) const;
 
 		grid::Grid2D getHardDropPos(const board::Board& curBoard) const;
 

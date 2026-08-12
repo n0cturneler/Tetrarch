@@ -77,29 +77,40 @@ namespace piece
 			}
 		}
 
-		//int oldRotationState{m_rotationState};
-		//grid::Grid2D oldPosition{m_gridPos};
-
 		if (actions.rotLeft)
 		{
-			m_rotationState -= 1;
-			//wallKick::Notation currentNotation{getWallkickNotation(-1)};
-			//m_gridPos = testWallkick(currentNotation, staticPieces);
+			int rotationOffset{-1};
+			wallKick::Notation notation{getWallkickNotation(rotationOffset)};
+			std::optional<grid::Grid2D> result{testWallkick(curBoard, rotationOffset, notation)};
+			if (result)
+			{
+				m_rotationState += rotationOffset;
+				m_gridPos = *result;
+			}
 		}
 		if (actions.rotRight)
 		{
-			m_rotationState += 1;
-			//wallKick::Notation currentNotation{getWallkickNotation(1)};
-			//m_gridPos = testWallkick(currentNotation, staticPieces);
+			int rotationOffset{1};
+			wallKick::Notation notation{getWallkickNotation(rotationOffset)};
+			std::optional<grid::Grid2D> result{testWallkick(curBoard, rotationOffset, notation)};
+			if (result)
+			{
+				m_rotationState += rotationOffset;
+				m_gridPos = *result;
+			}
 		}
 		if (actions.rot180)
 		{
-			m_rotationState += 2;
-			//wallKick::Notation currentNotation{getWallkickNotation(2)};
-			//m_gridPos = testWallkick(currentNotation, staticPieces);
+			int rotationOffset{2};
+			wallKick::Notation notation{getWallkickNotation(rotationOffset)};
+			std::optional<grid::Grid2D> result{testWallkick(curBoard, rotationOffset, notation)};
+			if (result)
+			{
+				m_rotationState += rotationOffset;
+				m_gridPos = *result;
+			}
 		}
 		m_rotationState = (m_rotationState + 4) % 4;
-		//if (oldPosition == m_gridPos) m_rotationState = oldRotationState;
 
 		MS currentDropRate{game::gravityMS};
 		if (actions.softDrop) { currentDropRate = game::softdropMS; }
@@ -166,7 +177,7 @@ namespace piece
 	}
 
 	void Piece::draw(const board::Board& curBoard) const
-	{	
+	{
 		assert(m_type != pieceType::PieceType::none);
 		assert(static_cast<int>(m_type) <= 6);
 		assert(m_rotationState >= 0 && m_rotationState <= 3);
@@ -261,9 +272,9 @@ namespace piece
 		return m_gridPos;
 	}
 
-	wallKick::Notation Piece::getWallkickNotation(int offset) const
+	wallKick::Notation Piece::getWallkickNotation(int rotationOffset) const
 	{
-		int testState{m_rotationState + offset};
+		int testState{m_rotationState + rotationOffset};
 		const int currentState{m_rotationState};
 
 		testState = (testState + 4) % 4;
@@ -276,7 +287,7 @@ namespace piece
 		{
 		case 0:
 		{
-			if (testState == 3) return wallKick::Notation::Zero_to_L;		
+			if (testState == 3) return wallKick::Notation::Zero_to_L;
 			if (testState == 1) return wallKick::Notation::Zero_to_R;
 			break;
 		}
@@ -304,30 +315,51 @@ namespace piece
 		return wallKick::Notation::Invalid;
 	}
 
-	std::optional<grid::Grid2D> Piece::testWallkick(wallKick::Notation notation, const board::Board& curBoard) const
-	{
-		for (int i{0}; i <= (game::wallkickAmount - 1); ++i)
+	std::optional<grid::Grid2D> Piece::testWallkick(const board::Board& curBoard, int rotationOffset, wallKick::Notation notation) const
+	{	
+		if (notation == wallKick::Notation::Invalid) return std::nullopt;
+
+		int testState{m_rotationState + rotationOffset};
+		testState = (testState + 4) % 4;
+
+		assert(m_type != pieceType::PieceType::none);
+		assert(static_cast<int>(m_type) <= 6);
+		assert(testState >= 0 && testState <= 3);
+
+		const wallKick::Data& wallkickData{
+			m_type == pieceType::PieceType::I
+				? wallKick::I
+				: wallKick::JLSTZ
+		};
+
+		if (wallkickData.empty()) return std::nullopt;
+
+		const std::size_t pieceIndex{static_cast<std::size_t>(m_type)};
+		const std::size_t rotationState{static_cast<std::size_t>(testState)};
+		const auto& data{pieceData::Data[pieceIndex][rotationState]};
+
+		for (std::size_t i{0}; i < wallkickData[0].size(); ++i)
 		{
-			if (m_type == pieceType::PieceType::I)
-			{
-				grid::Grid2D offset = wallKick::I[static_cast<std::size_t>(notation)][static_cast<std::size_t>(i)];
-				grid::Grid2D testPos{offset + m_gridPos};
+			grid::Grid2D wallkickOffset = wallkickData[static_cast<std::size_t>(notation)][i];
 
-				if (!curBoard.isColliding(testPos))
-				{
-					return testPos;
+			bool valid{true};
+
+			for (const grid::Grid2D& offset : data)
+			{
+				grid::Grid2D testPos = {m_gridPos + offset + wallkickOffset};
+
+				if (curBoard.isColliding(testPos) || curBoard.isOutOfBounds(testPos))
+				{	
+					valid = false;
+					break;
 				}
 			}
-			else
-			{
-				grid::Grid2D offset = wallKick::JLSTZ[static_cast<std::size_t>(notation)][static_cast<std::size_t>(i)];
-				grid::Grid2D testPos{offset + m_gridPos};
 
-				if (!curBoard.isColliding(testPos))
-				{
-					return testPos;
-				}
+			if (valid)
+			{
+				return m_gridPos + wallkickOffset;
 			}
+
 		}
 		return std::nullopt;
 	}
