@@ -270,8 +270,8 @@ namespace UI
 			pos.y - size64.y / 2.0f - 3.0f
 		};
 
-		DrawTextEx(mainFontBig, "Pieces", pos32header, fontSize32, fontSpacing, colors::textLight);
-		DrawTextEx(mainFontBig, textStats.c_str(), pos32, fontSize32, fontSpacing, colors::textLight);
+		DrawTextEx(mainFontBig, "Pieces", pos32header, fontSize32, fontSpacing, colors::uiBGLight);
+		DrawTextEx(mainFontBig, textStats.c_str(), pos32, fontSize32, fontSpacing, colors::uiBGLight);
 		DrawTextEx(mainFontVeryBig, textCount.c_str(), pos64, fontSize64, fontSpacing, colors::textWhite);
 	}
 
@@ -331,8 +331,8 @@ namespace UI
 			pos.y - size64.y / 2.0f - 3.0f
 		};
 
-		DrawTextEx(mainFontBig, "Time", pos32header, fontSize32, fontSpacing, colors::textLight);
-		DrawTextEx(mainFontBig, millis.c_str(), pos32, fontSize32, fontSpacing, colors::textLight);
+		DrawTextEx(mainFontBig, "Time", pos32header, fontSize32, fontSpacing, colors::uiBGLight);
+		DrawTextEx(mainFontBig, millis.c_str(), pos32, fontSize32, fontSpacing, colors::uiBGLight);
 		DrawTextEx(mainFontVeryBig, minutes_seconds.c_str(), pos64, fontSize64, fontSpacing, colors::textWhite);
 	}
 

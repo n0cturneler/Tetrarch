@@ -52,6 +52,8 @@ namespace board
 		const bag::Bag& nextBag() const { return m_nextBag; }
 
 	private:
+		void clearLines(const std::vector<std::size_t>& curPiece);
+
 		bag::Bag m_currentBag;
 		bag::Bag m_nextBag;
 

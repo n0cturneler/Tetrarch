@@ -40,6 +40,7 @@ namespace piece
 		if (actions.holdPiece)
 		{
 			m_type = curBoard.holdPiece(*this);
+			m_rotationState = 0;
 		}
 
 		if (actions.moveLeft || actions.moveRight)

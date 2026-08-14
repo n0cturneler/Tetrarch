@@ -60,6 +60,7 @@ namespace board
 		auto rotationState{static_cast<std::size_t>(curPiece.rotationState())};
 		const auto& data{pieceData::Data[pieceIndex][rotationState]};
 
+		std::vector<std::size_t> placedRows;
 		for (const grid::Grid2D& offset : data)
 		{
 			grid::Grid2D gridPos{offset + curPiece.gridPos()};
@@ -68,8 +69,67 @@ namespace board
 			{
 				if (m_grid[static_cast<std::size_t>(gridPos.y)][static_cast<std::size_t>(gridPos.x)].type == pieceType::PieceType::none)
 				{
+					placedRows.push_back(static_cast<std::size_t>(gridPos.y));
 					m_grid[static_cast<std::size_t>(gridPos.y)][static_cast<std::size_t>(gridPos.x)].type = curPiece.type();
 				}
+			}
+		}
+		std::sort(placedRows.begin(), placedRows.end());
+		clearLines(placedRows);
+	}
+
+	void Board::clearLines(const std::vector<std::size_t>& placedRows)
+	{		
+		for (std::size_t i : placedRows)
+		{	
+			bool full{true};
+
+			for (const cell::Cell& cell : m_grid[i])
+			{
+				if (cell.type == pieceType::PieceType::none)
+				{
+					full = false;
+					break;
+				}
+			}
+
+			if (full)
+			{	
+				for (cell::Cell& cell : m_grid[i])
+				{
+					cell.type = pieceType::PieceType::none;
+				}
+			}
+		}
+
+		std::size_t writeY{m_grid.size() - 1};
+
+		for (std::size_t i{m_grid.size()}; i-- > 0;)
+		{	
+			bool empty{true};
+			for (const cell::Cell& cell : m_grid[i])
+			{
+				if (cell.type != pieceType::PieceType::none)
+				{
+					empty = false;
+					break;
+				}
+			}
+			if (!empty)
+			{
+				if (writeY != i)
+				{
+					m_grid[writeY] = m_grid[i];
+				}
+				writeY -= 1;
+			}
+		}
+		
+		for (std::size_t i{}; i <= writeY; ++i)
+		{
+			for (cell::Cell& cell : m_grid[i])
+			{
+				cell.type = pieceType::PieceType::none;
 			}
 		}
 	}
@@ -82,7 +142,7 @@ namespace board
 	pieceType::PieceType Board::holdPiece(const piece::Piece& curPiece)
 	{	
 		if (!m_canHold) { return curPiece.type(); }
-	
+		
 		m_canHold = false;
 		pieceType::PieceType heldType{m_heldPiece};
 		m_heldPiece = curPiece.type();
