@@ -50,6 +50,7 @@ namespace board
 	void Board::placePiece(const piece::Piece& curPiece)
 	{	
 		m_canHold = true;
+		m_pieceCount += 1;
 
 		assert(curPiece.type() != pieceType::PieceType::none);
 		assert(static_cast<int>(curPiece.type()) <= 6);

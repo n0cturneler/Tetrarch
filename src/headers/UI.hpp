@@ -11,9 +11,14 @@
 
 namespace UI
 {	
+	using Clock = std::chrono::steady_clock;
+	using TimePoint = Clock::time_point;
+	using MS = std::chrono::milliseconds;
+
 	extern Font mainFont;
 	extern Font mainFontBig;
 	extern Font mainFontSmall;
+	extern Font mainFontVeryBig;
 
 	extern float fontSpacing;
 
@@ -28,12 +33,15 @@ namespace UI
 
 	void lockDelay(const piece::Piece& activePiece, const board::Board& curBoard);
 
-	void drawBag2D();
-	void drawBag3D(const board::Board& curBoard, int bagDisplayCount);
+	void bag();
+	void bag3D(const board::Board& curBoard, int bagDisplayCount);
+
+	void hold();
+	void hold3D(const board::Board& curBoard);
 
 	void attackBar();
 	void attackStats();
 
 	void pieceStats(const board::Board& curBoard);
-	void time();
+	void time(const board::Board& curBoard);
 }

@@ -72,6 +72,7 @@ namespace options
 		inline constexpr Color uiAltDark{55, 97, 72, 255};
 
 		inline constexpr Color textLight{180, 215, 255, 255};
+		inline constexpr Color textWhite{204, 230, 255, 255};
 		inline constexpr Color textDark{20, 25, 30, 255};
 
 		inline constexpr Color textGray{140, 140, 140, 255};

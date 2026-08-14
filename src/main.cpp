@@ -60,7 +60,8 @@ int main()
 		BeginDrawing();
 		ClearBackground(options::colors::background);
 
-			UI::drawBag2D();
+			UI::bag();
+			UI::hold();
 
 		BeginMode3D(camera);
 			
@@ -70,11 +71,14 @@ int main()
 			curBoard.draw();
 			activePiece.draw(curBoard);
 
-			UI::drawBag3D(curBoard, options::game::bagDisplayCount); 
+			UI::bag3D(curBoard, options::game::bagDisplayCount);
+			UI::hold3D(curBoard);
 
 		EndMode3D();
-
+			
 			UI::FPS();
+			UI::pieceStats(curBoard);
+			UI::time (curBoard);
 			UI::lockDelay(activePiece, curBoard);
 			
 		EndDrawing();

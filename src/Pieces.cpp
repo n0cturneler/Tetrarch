@@ -105,7 +105,7 @@ namespace piece
 			wallKick::Notation notation{getWallkickNotation(rotationOffset)};
 			std::optional<grid::Grid2D> result{testWallkick(curBoard, rotationOffset, notation)};
 			if (result)
-			{
+			{	
 				m_rotationState += rotationOffset;
 				m_gridPos = *result;
 			}

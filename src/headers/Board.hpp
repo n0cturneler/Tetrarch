@@ -46,7 +46,7 @@ namespace board
 		pieceType::PieceType getNextPieceType();
 
 		pieceType::PieceType holdPiece(const piece::Piece& curPiece);
-		pieceType::PieceType getHeldPiece() const { return m_heldPiece; }
+		pieceType::PieceType heldPiece() const { return m_heldPiece; }
 
 		const bag::Bag& currentBag() const { return m_currentBag; }
 		const bag::Bag& nextBag() const { return m_nextBag; }
