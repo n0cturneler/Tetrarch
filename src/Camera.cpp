@@ -1,6 +1,7 @@
 #include "Camera.hpp"
 
 #include "Options.hpp"
+#include "Input.hpp"
 using namespace options;
 
 #include <raylib.h>
@@ -23,20 +24,9 @@ namespace cam
 		return camera;
 	}
 
-	Vector3 update(const Vector3& position, float mouseWheelState)
+	Vector3 update(const Vector3& position, const input::PieceActions& actions)
 	{
 		Vector3 newPosition{position};
-
-		if (mouseWheelState > 0)
-		{
-			newPosition.y -= game::camScrollRate;
-		}
-		else if (mouseWheelState < 0)
-		{
-			newPosition.y += game::camScrollRate;
-		}
-
-		newPosition.y = std::clamp(newPosition.y, position.z, 300.0f);
 
 		return newPosition;
 	}

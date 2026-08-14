@@ -24,8 +24,8 @@ namespace UI
 	Font mainFontSmall;
 	Font mainFontVeryBig;
 
-	float fontSpacing{2.0f};
-	float borderThickness{5.0f};
+	constexpr float fontSpacing{2.0f};
+	constexpr float borderThickness{5.0f};
 
 	int screenWidth{};
 	int screenHeight{};
@@ -77,10 +77,10 @@ namespace UI
 	{
 		int fps{GetFPS()};
 
-		float roundness{0.0f};
-		int segments{2};
+		constexpr float roundness{0.0f};
+		constexpr int segments{2};
 
-		Rectangle box = {0.0f, 0.0f, 100.0f, 30.0f};
+		constexpr Rectangle box = {0.0f, 0.0f, 100.0f, 30.0f};
 
 		DrawRectangleRounded(box, roundness, segments, colors::uiBGLight);
 		DrawRectangleRoundedLines(box, roundness, segments, colors::textGray);
@@ -112,8 +112,8 @@ namespace UI
 			tProgress = 0.0f;
 		}
 
-		float barWidth{400.0f};
-		float barHeight{20.0f};
+		constexpr float barWidth{400.0f};
+		constexpr float barHeight{20.0f};
 
 		Rectangle box = {
 			(static_cast<float>(screenWidth) / 2.0f) - (barWidth / 2.0f),
@@ -129,14 +129,14 @@ namespace UI
 
 	void bag()
 	{
-		float roundness{0.05f};
-		int segments{1};
+		constexpr float roundness{0.05f};
+		constexpr int segments{1};
 
-		float headerWidth{200.0f};
-		float headerHeight{30.0f};
+		constexpr float headerWidth{200.0f};
+		constexpr float headerHeight{30.0f};
 
-		float boxWidth{200.0f};
-		float boxHeight{500.0f};
+		constexpr float boxWidth{200.0f};
+		constexpr float boxHeight{500.0f};
 
 		Rectangle header = {
 			(static_cast<float>(screenWidth) / 1.505f) - (headerWidth / 2.0f),
@@ -166,9 +166,9 @@ namespace UI
 
 	void bag3D(const board::Board& curBoard, int bagDisplayCount)
 	{
-		Vector3 defaultPosition{15.0f, 0.0f, -11.0f};
+		constexpr Vector3 defaultPosition{15.0f, 0.0f, -11.0f};
 
-		float scale{0.9f};
+		constexpr float scale{0.9f};
 		Vector3 cubeSize{Vector3Scale(curBoard.cubeSize(), scale)};
 
 		float pieceSpacing{cubeSize.z * 3.0f};
@@ -191,14 +191,14 @@ namespace UI
 
 	void hold()
 	{
-		float roundness{0.05f};
-		int segments{1};
+		constexpr float roundness{0.05f};
+		constexpr int segments{1};
 
-		float headerWidth{200.0f};
-		float headerHeight{30.0f};
+		constexpr float headerWidth{200.0f};
+		constexpr float headerHeight{30.0f};
 
-		float boxWidth{200.0f};
-		float boxHeight{125.0f};
+		constexpr float boxWidth{200.0f};
+		constexpr float boxHeight{125.0f};
 
 		Rectangle header = {
 			(static_cast<float>(screenWidth) / 3.0f) - (headerWidth / 2.0f),
@@ -228,8 +228,8 @@ namespace UI
 
 	void hold3D(const board::Board& curBoard)
 	{
-		Vector3 defaultPosition{-16.0f, 0.0f, -11.0f};
-		float scale{0.9f};
+		constexpr Vector3 defaultPosition{-16.0f, 0.0f, -11.0f};
+		constexpr float scale{0.9f};
 		Vector3 cubeSize{Vector3Scale(curBoard.cubeSize(), scale)};
 
 		pieceType::draw(curBoard.heldPiece(), cubeSize, defaultPosition);
@@ -239,7 +239,7 @@ namespace UI
 	{
 		float fontSize32{static_cast<float>(mainFontBig.baseSize)};
 		float fontSize64{static_cast<float>(mainFontVeryBig.baseSize)};
-		float spacing{2.0f};
+		constexpr float spacing{2.0f};
 
 		auto elapsedTime{Clock::now() - curBoard.startTime()};
 		double totalSeconds{std::chrono::duration<double>(elapsedTime).count()};
@@ -279,7 +279,7 @@ namespace UI
 	{
 		float fontSize32{static_cast<float>(mainFontBig.baseSize)};
 		float fontSize64{static_cast<float>(mainFontVeryBig.baseSize)};
-		float spacing{2.0f};
+		constexpr float spacing{2.0f};
 
 		auto elapsedTime{Clock::now() - curBoard.startTime()};
 		auto hours{

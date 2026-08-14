@@ -20,11 +20,6 @@ namespace UI
 	extern Font mainFontSmall;
 	extern Font mainFontVeryBig;
 
-	extern float fontSpacing;
-
-	extern int screenWidth;
-	extern int screenHeight;
-
 	void initialize();
 
 	Vector2 getCenteredTextPos(const Rectangle& box, float fontSize, const char* text);

@@ -51,11 +51,10 @@ int main()
 
 	while (!WindowShouldClose())
 	{
-		float mouseWheelMovement = GetMouseWheelMove();
-		camera.position = cam::update(camera.position, mouseWheelMovement);
-
 		currentAction = {input::getPieceAction(currentAction)};
 		activePiece.update(currentAction, curBoard);
+
+		curBoard.updatePosition(currentAction);
 
 		BeginDrawing();
 		ClearBackground(options::colors::background);
@@ -66,7 +65,8 @@ int main()
 		BeginMode3D(camera);
 			
 			curBoard.drawBackground(true);
-
+			curBoard.drawSpawnLocation();
+				
 			activePiece.drawGhostPiece(curBoard);
 			curBoard.draw();
 			activePiece.draw(curBoard);

@@ -16,9 +16,11 @@ using namespace options;
 #include <vector>
 #include <array>
 #include <chrono>
+#include <algorithm>
+#include <cmath>
 
 namespace board
-{	
+{
 	Board::Board(std::size_t rows, std::size_t bufferRows, std::size_t cols, float scale, Vector3 cubeSize, grid::Grid2D gridSpawn, Vector3 position)
 		: m_currentBag{Random::mt},
 		m_nextBag{Random::mt},
@@ -47,8 +49,37 @@ namespace board
 		};
 	}
 
-	void Board::placePiece(const piece::Piece& curPiece)
+	void Board::updatePosition(const input::PieceActions& actions)
 	{	
+		constexpr float maxZ{1.0f};
+		constexpr float maxX{0.5f};
+
+		if (actions.hardDrop)
+		{
+			m_position.z = std::min(m_position.z += 0.25f, maxZ);
+		}
+
+		if (actions.holdLeft)
+		{
+			m_position.x = Lerp(m_position.x, m_position.x - 0.5f, GetFrameTime());
+		}
+
+		if (actions.holdRight)
+		{
+			m_position.x = Lerp(m_position.x, m_position.x + 0.5f, GetFrameTime());
+		}
+
+		const float intensity{m_position.z / maxZ};
+		m_position.x += std::sin(GetTime() * 5.0f) * (0.05f * intensity);
+
+		m_position.x = std::clamp(m_position.x, -maxX, maxX);
+
+		m_position.x = Lerp(m_position.x, 0.0f, GetFrameTime() * 5.0f);
+		m_position.z = Lerp(m_position.z, 0.0f, GetFrameTime() * 10.0f);
+	}
+
+	void Board::placePiece(const piece::Piece& curPiece)
+	{
 		m_canHold = true;
 		m_pieceCount += 1;
 
@@ -79,9 +110,9 @@ namespace board
 	}
 
 	void Board::clearLines(const std::vector<std::size_t>& placedRows)
-	{		
+	{
 		for (std::size_t i : placedRows)
-		{	
+		{
 			bool full{true};
 
 			for (const cell::Cell& cell : m_grid[i])
@@ -94,7 +125,7 @@ namespace board
 			}
 
 			if (full)
-			{	
+			{
 				for (cell::Cell& cell : m_grid[i])
 				{
 					cell.type = pieceType::PieceType::none;
@@ -105,7 +136,7 @@ namespace board
 		std::size_t writeY{m_grid.size() - 1};
 
 		for (std::size_t i{m_grid.size()}; i-- > 0;)
-		{	
+		{
 			bool empty{true};
 			for (const cell::Cell& cell : m_grid[i])
 			{
@@ -124,7 +155,7 @@ namespace board
 				writeY -= 1;
 			}
 		}
-		
+
 		for (std::size_t i{}; i <= writeY; ++i)
 		{
 			for (cell::Cell& cell : m_grid[i])
@@ -140,9 +171,9 @@ namespace board
 	}
 
 	pieceType::PieceType Board::holdPiece(const piece::Piece& curPiece)
-	{	
+	{
 		if (!m_canHold) { return curPiece.type(); }
-		
+
 		m_canHold = false;
 		pieceType::PieceType heldType{m_heldPiece};
 		m_heldPiece = curPiece.type();
@@ -205,22 +236,22 @@ namespace board
 		// Buffer Grid
 		if (drawBuffer)
 		{
-			for (std::size_t i{}; i <= m_bufferRows; ++i)
+			for (std::size_t i{}; i <= m_rows; ++i)
 			{
-				float zPos{m_cubeSize.z * static_cast<float>(i)};
+				float zPos{m_cubeSize.z * static_cast<float>(i) + m_position.z};
 
-				Vector3 startPos{m_halfWidth, 0.0f, zPos - m_fullHeight - m_halfHeight};
-				Vector3 endPos{-m_halfWidth, 0.0f, zPos - m_fullHeight - m_halfHeight};
+				Vector3 startPos{m_halfWidth + m_position.x, 0.0f, zPos - m_halfHeight};
+				Vector3 endPos{-m_halfWidth + m_position.x, 0.0f, zPos - m_halfHeight};
 
 				DrawLine3D(startPos, endPos, colors::backgroundBufferLines);
 			}
 
 			for (std::size_t i{}; i <= m_cols; ++i)
 			{
-				float xPos{m_cubeSize.x * static_cast<float>(i)};
+				float xPos{m_cubeSize.x * static_cast<float>(i) + m_position.x};
 
-				Vector3 startPos{xPos - m_halfWidth, 0.0f, -m_fullHeight + m_halfHeight};
-				Vector3 endPos{xPos - m_halfWidth, 0.0f, -m_fullHeight - m_halfHeight};
+				Vector3 startPos{xPos - m_halfWidth, 0.0f, m_halfHeight + m_position.z};
+				Vector3 endPos{xPos - m_halfWidth, 0.0f, -m_halfHeight + m_position.z};
 
 				DrawLine3D(startPos, endPos, colors::backgroundBufferLines);
 			}
@@ -229,24 +260,41 @@ namespace board
 		// Play Grid
 		for (std::size_t i{}; i <= m_rows; ++i)
 		{
-			float zPos{m_cubeSize.z * static_cast<float>(i)};
+			float zPos{m_cubeSize.z * static_cast<float>(i) + m_position.z};
 
-			Vector3 startPos{m_halfWidth, 0.0f, zPos - m_halfHeight};
-			Vector3 endPos{-m_halfWidth, 0.0f, zPos - m_halfHeight};
+			Vector3 startPos{m_halfWidth + m_position.x, 0.0f, zPos - m_halfHeight};
+			Vector3 endPos{-m_halfWidth + m_position.x, 0.0f, zPos - m_halfHeight};
 
 			DrawLine3D(startPos, endPos, colors::backgroundLines);
 		}
 
 		for (std::size_t i{}; i <= m_cols; ++i)
 		{
-			float xPos{m_cubeSize.x * static_cast<float>(i)};
+			float xPos{m_cubeSize.x * static_cast<float>(i) + m_position.x};
 
-			Vector3 startPos{xPos - m_halfWidth, 0.0f, m_halfHeight};
-			Vector3 endPos{xPos - m_halfWidth, 0.0f, -m_halfHeight};
+			Vector3 startPos{xPos - m_halfWidth, 0.0f, m_halfHeight + m_position.z};
+			Vector3 endPos{xPos - m_halfWidth, 0.0f, -m_halfHeight + m_position.z};
 
 			DrawLine3D(startPos, endPos, colors::backgroundLines);
 		}
 	}
-}
 
+	void Board::drawSpawnLocation() const
+	{
+		const std::size_t pieceIndex{static_cast<std::size_t>(m_currentBag.peek(m_currentBag.currentIndex()))};
+		const std::size_t rotationState{0};
+		const auto& data{pieceData::Data[pieceIndex][rotationState]};
+
+		Color mainColor{Fade(colors::textGray, 0.5f)};
+
+		for (const grid::Grid2D& offset : data)
+		{
+			grid::Grid2D gridPosition = {m_gridSpawn + offset};
+			Vector3 position = {boardToWorld(gridPosition)};
+
+			DrawCube(position, m_cubeSize.x / 2, m_cubeSize.y / 2, m_cubeSize.z / 2, mainColor);
+			DrawCubeWires(position, m_cubeSize.x, m_cubeSize.y, m_cubeSize.z, mainColor);
+		}
+	}
+}
 
