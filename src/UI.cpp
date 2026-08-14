@@ -243,7 +243,7 @@ namespace UI
 
 		auto elapsedTime{Clock::now() - curBoard.startTime()};
 		double totalSeconds{std::chrono::duration<double>(elapsedTime).count()};
-		std::string textStats{std::format("{:.2f}/S", curBoard.pieceCount() / totalSeconds)};
+		std::string textStats{std::format("{:.2f}/S", static_cast<double>(curBoard.pieceCount()) / totalSeconds)};
 		std::string textCount{std::format("{},", curBoard.pieceCount())};
 
 		Vector2 size32{MeasureTextEx(mainFontBig, textStats.c_str(), fontSize32, spacing)};

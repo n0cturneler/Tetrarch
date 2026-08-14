@@ -25,7 +25,7 @@ using namespace options;
 #include <array>
 #include <optional>
 
-namespace piece
+namespace piece	
 {
 	Piece::Piece(grid::Grid2D spawnPos, pieceType::PieceType type, int rotationState)
 		: m_gridPos{spawnPos}, m_type{type}, m_rotationState{rotationState}
@@ -41,6 +41,7 @@ namespace piece
 		{
 			m_type = curBoard.holdPiece(*this);
 			m_rotationState = 0;
+			m_gridPos = curBoard.spawnPos();
 		}
 
 		if (actions.moveLeft || actions.moveRight)

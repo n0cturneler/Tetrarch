@@ -4,7 +4,7 @@ A game using raylib and c++
 
 
 ## Features :
-* SRX rotation system 🟥
+* SRX rotation system 🟩
 * Skinning support 🟥
 * Different gamemodes (marathon, sprint, cheese race etc.) 🟥
 
