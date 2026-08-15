@@ -36,37 +36,39 @@ int main()
 
 	Camera3D camera{cam::initialize()};
 
-	board::Board curBoard{
-		options::game::rows, 
-		options::game::bufferRows, 
-		options::game::columns, 
-		options::game::scale,
-		options::game::cubeSize, 
-		options::game::gridSpawn,
-		options::game::worldOrigin
-	};
-
-	piece::Piece activePiece{curBoard.spawnPos(), curBoard.getNextPieceType()};
-	input::PieceActions currentAction{};
-
 	while (!WindowShouldClose())
-	{
-		currentAction = {input::getPieceAction(currentAction)};
-		activePiece.update(currentAction, curBoard);
+	{	
+		board::Board curBoard{
+			options::game::rows,
+			options::game::bufferRows,
+			options::game::columns,
+			options::game::scale,
+			options::game::cubeSize,
+			options::game::gridSpawn,
+			options::game::worldOrigin
+		};
 
-		curBoard.updatePosition(currentAction);
+		piece::Piece activePiece{curBoard.spawnPos(), curBoard.getNextPieceType()};
+		input::PieceActions currentAction{};
 
-		BeginDrawing();
-		ClearBackground(options::colors::background);
+		while (curBoard.isAlive() && !WindowShouldClose())
+		{
+			currentAction = {input::getPieceAction(currentAction)};
+			activePiece.update(currentAction, curBoard);
+
+			curBoard.updatePosition(currentAction);
+
+			BeginDrawing();
+			ClearBackground(options::colors::background);
 
 			UI::bag();
 			UI::hold();
 
-		BeginMode3D(camera);
-			
+			BeginMode3D(camera);
+
 			curBoard.drawBackground(true);
 			curBoard.drawSpawnLocation();
-				
+
 			activePiece.drawGhostPiece(curBoard);
 			curBoard.draw();
 			activePiece.draw(curBoard);
@@ -74,15 +76,15 @@ int main()
 			UI::bag3D(curBoard, options::game::bagDisplayCount);
 			UI::hold3D(curBoard);
 
-		EndMode3D();
-			
+			EndMode3D();
+
 			UI::FPS();
 			UI::pieceStats(curBoard);
-			UI::time (curBoard);
+			UI::time(curBoard);
 			UI::lockDelay(activePiece, curBoard);
-			
-		EndDrawing();
-	}
 
+			EndDrawing();
+		}
+	}
 	CloseWindow();
 }

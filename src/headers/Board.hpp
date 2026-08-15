@@ -43,6 +43,8 @@ namespace board
 		bool isColliding(grid::Grid2D testPos) const;
 		bool isOutOfBounds(grid::Grid2D testPos) const;
 
+		bool isAlive() const { return m_alive; }
+
 		void draw() const;
 		void drawBackground(bool drawBuffer) const;
 		void drawSpawnLocation() const;
@@ -57,6 +59,7 @@ namespace board
 
 	private:
 		void clearLines(const std::vector<std::size_t>& curPiece);
+		void isGameOver();
 
 		bag::Bag m_currentBag;
 		bag::Bag m_nextBag;
@@ -82,6 +85,8 @@ namespace board
 
 		pieceType::PieceType m_heldPiece{pieceType::PieceType::none};
 		bool m_canHold{true};
+
+		bool m_alive{true};
 
 		std::uint64_t m_pieceCount{};
 		std::uint64_t m_lineCleared{};

@@ -107,10 +107,13 @@ namespace board
 		}
 		std::sort(placedRows.begin(), placedRows.end());
 		clearLines(placedRows);
+
+		isGameOver();
 	}
 
 	void Board::clearLines(const std::vector<std::size_t>& placedRows)
 	{
+		int linesCleared{};
 		for (std::size_t i : placedRows)
 		{
 			bool full{true};
@@ -125,7 +128,8 @@ namespace board
 			}
 
 			if (full)
-			{
+			{	
+				linesCleared += 1;
 				for (cell::Cell& cell : m_grid[i])
 				{
 					cell.type = pieceType::PieceType::none;
@@ -161,6 +165,26 @@ namespace board
 			for (cell::Cell& cell : m_grid[i])
 			{
 				cell.type = pieceType::PieceType::none;
+			}
+		}
+	}
+
+	void Board::isGameOver() 
+	{
+		const std::size_t pieceIndex{static_cast<std::size_t>(m_currentBag.peek(m_currentBag.currentIndex()))};
+		const std::size_t rotationState{0};
+		const auto& data{pieceData::Data[pieceIndex][rotationState]};
+
+		Color mainColor{Fade(colors::textGray, 0.5f)};
+
+		for (const grid::Grid2D& offset : data)
+		{	
+			grid::Grid2D gridPosition = {m_gridSpawn + offset};
+			
+			if (m_grid[gridPosition.y][gridPosition.x].type != pieceType::PieceType::none)
+			{
+				m_alive = false;
+				break;
 			}
 		}
 	}
@@ -236,12 +260,12 @@ namespace board
 		// Buffer Grid
 		if (drawBuffer)
 		{
-			for (std::size_t i{}; i <= m_rows; ++i)
+			for (std::size_t i{}; i <= m_bufferRows; ++i)
 			{
 				float zPos{m_cubeSize.z * static_cast<float>(i) + m_position.z};
 
-				Vector3 startPos{m_halfWidth + m_position.x, 0.0f, zPos - m_halfHeight};
-				Vector3 endPos{-m_halfWidth + m_position.x, 0.0f, zPos - m_halfHeight};
+				Vector3 startPos{m_halfWidth + m_position.x, 0.0f, zPos - m_fullHeight - m_halfHeight};
+				Vector3 endPos{-m_halfWidth + m_position.x, 0.0f, zPos - m_fullHeight - m_halfHeight};
 
 				DrawLine3D(startPos, endPos, colors::backgroundBufferLines);
 			}
@@ -250,8 +274,8 @@ namespace board
 			{
 				float xPos{m_cubeSize.x * static_cast<float>(i) + m_position.x};
 
-				Vector3 startPos{xPos - m_halfWidth, 0.0f, m_halfHeight + m_position.z};
-				Vector3 endPos{xPos - m_halfWidth, 0.0f, -m_halfHeight + m_position.z};
+				Vector3 startPos{xPos - m_halfWidth, 0.0f, m_halfHeight + m_position.z - m_fullHeight};
+				Vector3 endPos{xPos - m_halfWidth, 0.0f, -m_halfHeight + m_position.z - m_fullHeight};
 
 				DrawLine3D(startPos, endPos, colors::backgroundBufferLines);
 			}
