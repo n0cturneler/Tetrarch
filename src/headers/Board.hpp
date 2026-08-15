@@ -51,6 +51,7 @@ namespace board
 
 		pieceType::PieceType getNextPieceType();
 
+		bool canHold() const { return m_canHold; }
 		pieceType::PieceType holdPiece(const piece::Piece& curPiece);
 		pieceType::PieceType heldPiece() const { return m_heldPiece; }
 

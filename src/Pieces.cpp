@@ -25,7 +25,7 @@ using namespace options;
 #include <array>
 #include <optional>
 
-namespace piece	
+namespace piece
 {
 	Piece::Piece(grid::Grid2D spawnPos, pieceType::PieceType type, int rotationState)
 		: m_gridPos{spawnPos}, m_type{type}, m_rotationState{rotationState}
@@ -37,7 +37,7 @@ namespace piece
 		TimePoint now{Clock::now()};
 		m_DASState.lastPress = actions.lastPress;
 
-		if (actions.holdPiece)
+		if (actions.holdPiece && curBoard.canHold())
 		{
 			m_type = curBoard.holdPiece(*this);
 			m_rotationState = 0;
@@ -107,7 +107,7 @@ namespace piece
 			wallKick::Notation notation{getWallkickNotation(rotationOffset)};
 			std::optional<grid::Grid2D> result{testWallkick(curBoard, rotationOffset, notation)};
 			if (result)
-			{	
+			{
 				m_rotationState += rotationOffset;
 				m_gridPos = *result;
 			}
@@ -210,7 +210,7 @@ namespace piece
 	}
 
 	void Piece::drawGhostPiece(const board::Board& curBoard) const
-	{	
+	{
 		assert(m_type != pieceType::PieceType::none);
 		assert(static_cast<int>(m_type) <= 6);
 		assert(m_rotationState >= 0 && m_rotationState <= 3);
@@ -318,7 +318,7 @@ namespace piece
 	}
 
 	std::optional<grid::Grid2D> Piece::testWallkick(const board::Board& curBoard, int rotationOffset, wallKick::Notation notation) const
-	{	
+	{
 		if (notation == wallKick::Notation::Invalid) return std::nullopt;
 
 		int testState{m_rotationState + rotationOffset};
@@ -330,8 +330,8 @@ namespace piece
 
 		const wallKick::Data& wallkickData{
 			m_type == pieceType::PieceType::I
-				? wallKick::I
-				: wallKick::JLSTZ
+			? wallKick::I
+			: wallKick::JLSTZ
 		};
 
 		if (wallkickData.empty()) return std::nullopt;
@@ -351,7 +351,7 @@ namespace piece
 				grid::Grid2D testPos = {m_gridPos + offset + wallkickOffset};
 
 				if (curBoard.isColliding(testPos) || curBoard.isOutOfBounds(testPos))
-				{	
+				{
 					valid = false;
 					break;
 				}
