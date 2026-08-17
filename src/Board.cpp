@@ -8,6 +8,7 @@ using namespace options;
 #include "Pieces.hpp"
 #include "PieceOffsets.hpp"
 #include "Random.hpp"
+#include "Attack.hpp"
 
 #include <raylib.h>
 #include <raymath.h>
@@ -58,7 +59,7 @@ namespace board
 		{
 			m_position.z = std::min(m_position.z += 0.25f, maxZ);
 		}
-
+			
 		if (actions.holdLeft)
 		{
 			m_position.x = Lerp(m_position.x, m_position.x - 0.5f, GetFrameTime());
@@ -69,8 +70,18 @@ namespace board
 			m_position.x = Lerp(m_position.x, m_position.x + 0.5f, GetFrameTime());
 		}
 
+		if (actions.rotLeft)
+		{
+			m_position.x = Lerp(m_position.x, m_position.x - 1.5f, GetFrameTime() * 5.0f);
+		}
+
+		if (actions.rotRight)
+		{
+			m_position.x = Lerp(m_position.x, m_position.x + 1.5f, GetFrameTime() * 5.0f);
+		}
+
 		const float intensity{m_position.z / maxZ};
-		m_position.x += std::sin(GetTime() * 5.0f) * (0.05f * intensity);
+		m_position.x += static_cast<float>(std::sin(GetTime() * 5.0f)) * (0.025f * intensity);
 
 		m_position.x = std::clamp(m_position.x, -maxX, maxX);
 
@@ -167,6 +178,9 @@ namespace board
 				cell.type = pieceType::PieceType::none;
 			}
 		}
+
+		m_lineCleared += linesCleared;
+		m_attack += attack::getAttackValue(attack::getClearType(linesCleared));
 	}
 
 	void Board::isGameOver() 

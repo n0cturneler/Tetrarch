@@ -1,12 +1,13 @@
 #pragma once
 
 #include <array>
+#include <iostream>
 #include <string_view>
 
 namespace attack
 {
 	enum class ClearType
-	{
+	{	
 		Single,
 		Double,
 		Triple,
@@ -16,6 +17,19 @@ namespace attack
 		SpinDouble,
 		SpinTriple
 	};
+
+	inline constexpr ClearType getClearType(int rawAttack)
+	{
+		switch (rawAttack)
+		{
+		case 0: return ClearType::Single;
+		case 1: return ClearType::Single;
+		case 2: return ClearType::Double;
+		case 3: return ClearType::Triple;
+		case 4: return ClearType::Tetris;
+		default: break;
+		}
+	}
 
 	inline constexpr std::array<int, 7> attackValue
 	{
@@ -29,7 +43,7 @@ namespace attack
 	};
 
 	inline constexpr int getAttackValue(ClearType type)
-	{
+	{	
 		return attackValue[static_cast<std::size_t>(type)];
 	}
 
@@ -46,7 +60,7 @@ namespace attack
 		case ClearType::SpinDouble: return "-SPIN DOUBLE";
 		case ClearType::SpinTriple: return "-SPIN TRIPLE";
 
-		case default: return "????";
+		default: break;
 		}
 	}
 }

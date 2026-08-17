@@ -251,7 +251,7 @@ namespace UI
 
 		Vector2 pos{
 			(static_cast<float>(screenWidth) / 2.75f),
-			(static_cast<float>(screenHeight) / 1.4f)
+			(static_cast<float>(screenHeight) / 1.25f) - (static_cast<float>(screenHeight) / 15.0f) * 2
 		};
 
 		Vector2 pos32header{
@@ -271,6 +271,50 @@ namespace UI
 		};
 
 		DrawTextEx(mainFontBig, "Pieces", pos32header, fontSize32, fontSpacing, colors::uiBGLight);
+		DrawTextEx(mainFontBig, textStats.c_str(), pos32, fontSize32, fontSpacing, colors::uiBGLight);
+		DrawTextEx(mainFontVeryBig, textCount.c_str(), pos64, fontSize64, fontSpacing, colors::textWhite);
+	}
+
+	void attackStats(const board::Board& curBoard)
+	{
+		float fontSize32{static_cast<float>(mainFontBig.baseSize)};
+		float fontSize64{static_cast<float>(mainFontVeryBig.baseSize)};
+		constexpr float spacing{2.0f};
+
+		auto elapsedTime{Clock::now() - curBoard.startTime()};
+		double totalSeconds{std::chrono::duration<double>(elapsedTime).count() / 60.0};
+
+		std::string textStats = std::format("{:.2f}/M",
+			(totalSeconds > 0.0 && curBoard.attack() != 0) ? (static_cast<double>(curBoard.attack()) / totalSeconds) : 0.0
+		);
+
+		std::string textCount{std::format("{},", curBoard.attack())};
+
+		Vector2 size32{MeasureTextEx(mainFontBig, textStats.c_str(), fontSize32, spacing)};
+		Vector2 size64{MeasureTextEx(mainFontVeryBig, textCount.c_str(), fontSize64, spacing)};
+
+		Vector2 pos{
+			(static_cast<float>(screenWidth) / 2.75f),
+			(static_cast<float>(screenHeight) / 1.25f) - (static_cast<float>(screenHeight) / 15.0f)
+		};
+
+		Vector2 pos32header{
+			pos.x,
+			pos.y - size32.y / 2.0f - size32.y
+		};
+
+		Vector2 pos32{
+			pos.x,
+			pos.y - size32.y / 2.0f
+		};
+
+		Vector2 pos64
+		{
+			pos.x - size64.x - 10.0f,
+			pos.y - size64.y / 2.0f - 3.0f
+		};
+
+		DrawTextEx(mainFontBig, "Attack", pos32header, fontSize32, fontSpacing, colors::uiBGLight);
 		DrawTextEx(mainFontBig, textStats.c_str(), pos32, fontSize32, fontSpacing, colors::uiBGLight);
 		DrawTextEx(mainFontVeryBig, textCount.c_str(), pos64, fontSize64, fontSpacing, colors::textWhite);
 	}
@@ -335,5 +379,4 @@ namespace UI
 		DrawTextEx(mainFontBig, millis.c_str(), pos32, fontSize32, fontSpacing, colors::uiBGLight);
 		DrawTextEx(mainFontVeryBig, minutes_seconds.c_str(), pos64, fontSize64, fontSpacing, colors::textWhite);
 	}
-
 }

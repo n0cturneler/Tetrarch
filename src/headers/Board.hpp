@@ -28,6 +28,7 @@ namespace board
 
 		float scale() const { return m_scale; }
 		std::uint64_t pieceCount() const { return m_pieceCount; }
+		std::uint64_t attack() const { return m_attack; }
 		TimePoint startTime() const { return m_startTime; }
 
 		std::size_t bufferRows() const { return m_bufferRows; }

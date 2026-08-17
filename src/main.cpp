@@ -55,7 +55,7 @@ int main()
 		{
 			currentAction = {input::getPieceAction(currentAction)};
 			activePiece.update(currentAction, curBoard);
-
+			
 			curBoard.updatePosition(currentAction);
 
 			BeginDrawing();
@@ -82,6 +82,7 @@ int main()
 			UI::pieceStats(curBoard);
 			UI::time(curBoard);
 			UI::lockDelay(activePiece, curBoard);
+			UI::attackStats(curBoard);
 
 			EndDrawing();
 		}
