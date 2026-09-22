@@ -1,7 +1,9 @@
 #include "UI.hpp"
+#include "Screen.hpp"
 
 #include "Pieces.hpp"
 #include "Bag.hpp"
+#include "Attack.hpp"
 #include "Options.hpp"
 using namespace options;
 
@@ -15,7 +17,6 @@ using namespace options;
 #include <string_view>
 #include <iostream>
 #include <cstdint>
-#include <chrono>
 
 namespace UI
 {
@@ -29,6 +30,8 @@ namespace UI
 
 	int screenWidth{};
 	int screenHeight{};
+
+	int lastPieceCount{};
 
 	void initialize()
 	{
@@ -272,6 +275,34 @@ namespace UI
 
 		DrawTextEx(mainFontBig, "Pieces", pos32header, fontSize32, fontSpacing, colors::uiBGLight);
 		DrawTextEx(mainFontBig, textStats.c_str(), pos32, fontSize32, fontSpacing, colors::uiBGLight);
+		DrawTextEx(mainFontVeryBig, textCount.c_str(), pos64, fontSize64, fontSpacing, colors::textWhite);
+	}
+
+	void attackName(const board::Board& curBoard)
+	{
+		float fontSize64{static_cast<float>(mainFontVeryBig.baseSize)};
+		constexpr float spacing{0.0f};
+
+		
+		if (lastPieceCount != curBoard.pieceCount()) lastPieceCount = curBoard.pieceCount();
+
+
+		std::string textCount{std::format("{}", attack::getAttackString(curBoard.lastClearType()))};
+
+		Vector2 size64{MeasureTextEx(mainFontVeryBig, textCount.c_str(), fontSize64, spacing)};
+
+		Vector2 pos{
+			(static_cast<float>(screenWidth) / 2.75f),
+			(static_cast<float>(screenHeight) / 1.25f) - (static_cast<float>(screenHeight) / 15.0f) * 5
+		};
+
+
+		Vector2 pos64
+		{
+			pos.x - size64.x + 50.0f,
+			pos.y - size64.y / 2.0f - 3.0f
+		};
+
 		DrawTextEx(mainFontVeryBig, textCount.c_str(), pos64, fontSize64, fontSpacing, colors::textWhite);
 	}
 

@@ -83,6 +83,7 @@ int main()
 			UI::time(curBoard);
 			UI::lockDelay(activePiece, curBoard);
 			UI::attackStats(curBoard);
+			UI::attackName(curBoard);
 
 			EndDrawing();
 		}

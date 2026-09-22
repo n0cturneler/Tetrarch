@@ -8,10 +8,11 @@ namespace attack
 {
 	enum class ClearType
 	{	
+		none,
 		Single,
 		Double,
 		Triple,
-		Tetris,
+		Tetra,
 
 		SpinSingle,
 		SpinDouble,
@@ -22,11 +23,11 @@ namespace attack
 	{
 		switch (rawAttack)
 		{
-		case 0: return ClearType::Single;
+		case 0: return ClearType::none;
 		case 1: return ClearType::Single;
 		case 2: return ClearType::Double;
 		case 3: return ClearType::Triple;
-		case 4: return ClearType::Tetris;
+		case 4: return ClearType::Tetra;
 		default: break;
 		}
 	}
@@ -51,10 +52,11 @@ namespace attack
 	{
 		switch (type)
 		{
+		case ClearType::none: return "";
 		case ClearType::Single: return "SINGLE";
 		case ClearType::Double: return "DOUBLE";
 		case ClearType::Triple: return "TRIPLE";
-		case ClearType::Tetris: return "TETRIS";
+		case ClearType::Tetra: return "TETRA";
 
 		case ClearType::SpinSingle: return "-SPIN SINGLE";
 		case ClearType::SpinDouble: return "-SPIN DOUBLE";

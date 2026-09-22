@@ -3,10 +3,12 @@
 #include "Cell.hpp"
 #include "Bag.hpp"
 #include "Input.hpp"
+#include "Attack.hpp"
 
 #include <vector>
 #include <chrono>
 #include <cstdint>
+#include <string>
 
 namespace piece
 {
@@ -59,6 +61,7 @@ namespace board
 		const bag::Bag& currentBag() const { return m_currentBag; }
 		const bag::Bag& nextBag() const { return m_nextBag; }
 
+		attack::ClearType lastClearType() const { return m_lastClearType; }
 	private:
 		void clearLines(const std::vector<std::size_t>& curPiece);
 		void isGameOver();
@@ -94,6 +97,8 @@ namespace board
 		std::uint64_t m_lineCleared{};
 		std::uint64_t m_score{};
 		std::uint64_t m_attack{};
+
+		attack::ClearType m_lastClearType{attack::ClearType::none};
 
 		TimePoint m_startTime{Clock::now()};
 

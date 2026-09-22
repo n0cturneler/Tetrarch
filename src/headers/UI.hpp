@@ -34,9 +34,9 @@ namespace UI
 	void hold();
 	void hold3D(const board::Board& curBoard);
 
-	void attackBar();
-
 	void pieceStats(const board::Board& curBoard);
+
+	void attackName(const board::Board& curBoard);
 	void attackStats(const board::Board& curBoard);
 	void time(const board::Board& curBoard);
 }
