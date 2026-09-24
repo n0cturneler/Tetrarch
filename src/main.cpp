@@ -1,7 +1,3 @@
-#ifndef _DEBUG
-#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
-#endif 
-
 #include "Options.hpp"
 #include "PieceType.hpp"
 #include "Pieces.hpp"
@@ -29,6 +25,8 @@ int main()
 
 	InitWindow(0, 0, "3DTRTRIS");
 	MaximizeWindow();
+
+	int x{};
 
 	UI::initialize();
 

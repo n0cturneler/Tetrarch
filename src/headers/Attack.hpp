@@ -21,14 +21,14 @@ namespace attack
 
 	inline constexpr ClearType getClearType(int rawAttack)
 	{
-		switch (rawAttack)
+			switch (rawAttack)
 		{
 		case 0: return ClearType::none;
 		case 1: return ClearType::Single;
 		case 2: return ClearType::Double;
 		case 3: return ClearType::Triple;
 		case 4: return ClearType::Tetra;
-		default: break;
+		default: return ClearType::none;
 		}
 	}
 

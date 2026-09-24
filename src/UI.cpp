@@ -296,7 +296,6 @@ namespace UI
 			(static_cast<float>(screenHeight) / 1.25f) - (static_cast<float>(screenHeight) / 15.0f) * 5
 		};
 
-
 		Vector2 pos64
 		{
 			pos.x - size64.x + 50.0f,

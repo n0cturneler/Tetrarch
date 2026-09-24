@@ -41,10 +41,6 @@ target_include_directories(main SYSTEM PRIVATE
     "${CMAKE_SOURCE_DIR}/external/raygui/src"
 )
 
-# Include Dear ImGui
-find_package(imgui CONFIG REQUIRED)
-target_link_libraries(main PRIVATE imgui::imgui)
-
 # Include headers 
 target_include_directories(main PRIVATE 
     "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -52,6 +48,10 @@ target_include_directories(main PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/assets"
     "${CMAKE_SOURCE_DIR}/libs/include"
 )
+
+# Include Dear ImGui
+find_package(imgui CONFIG REQUIRED)
+target_link_libraries(main PRIVATE imgui::imgui)
 
 # Include libraries from libs/lib
 # target_link_directories (main PRIVATE
