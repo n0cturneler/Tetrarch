@@ -26,8 +26,6 @@ int main()
 	InitWindow(0, 0, "3DTRTRIS");
 	MaximizeWindow();
 
-	int x{};
-
 	UI::initialize();
 
 	SetTargetFPS(options::video::frameRate);
