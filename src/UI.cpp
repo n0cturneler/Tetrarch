@@ -283,9 +283,7 @@ namespace UI
 		float fontSize64{static_cast<float>(mainFontVeryBig.baseSize)};
 		constexpr float spacing{0.0f};
 
-		
 		if (lastPieceCount != curBoard.pieceCount()) lastPieceCount = curBoard.pieceCount();
-
 
 		std::string textCount{std::format("{}", attack::getAttackString(curBoard.lastClearType()))};
 

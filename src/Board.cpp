@@ -180,9 +180,9 @@ namespace board
 		}
 
 		m_lineCleared += linesCleared;
-		if (attack::getClearType(linesCleared) != attack::ClearType::none) m_lastClearType = attack::getClearType(linesCleared);
+		m_attack += attack::getAttackValue(attack::getClearType(linesCleared));
 
-		m_attack += attack::getAttackValue(m_lastClearType);
+		if (attack::getClearType(linesCleared) != attack::ClearType::none) m_lastClearType = attack::getClearType(linesCleared);
 	}
 
 	void Board::isGameOver() 

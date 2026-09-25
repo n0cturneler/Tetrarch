@@ -32,8 +32,9 @@ namespace attack
 		}
 	}
 
-	inline constexpr std::array<int, 7> attackValue
+	inline constexpr std::array<int, 8> attackValue
 	{
+		0,
 		0,
 		1,
 		2,
